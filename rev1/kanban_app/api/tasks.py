@@ -41,6 +41,23 @@ def patch_task(task_id: int, update: TaskUpdate):
   updates = {k: v for k, v in update.dict().items() if v is not None}
   if not updates:
     raise HTTPException(status_code=400, detail="no fields to update")
+
+  # Enforce scope/due_date pairing: both set or both null
+  if 'scope' in updates or 'due_date' in updates:
+    tasks = list_tasks()
+    task = next((t for t in tasks if t['id'] == task_id), None)
+    if task:
+      scope = updates.get('scope', task.get('scope'))
+      due_date = updates.get('due_date', task.get('due_date'))
+
+      # If one is being set, both must be set; if one is null, both must be null
+      if (scope is None) != (due_date is None):
+        # Sync: if scope is set but due_date unset (or vice versa), unset the scope
+        if scope and not due_date:
+          updates['scope'] = None
+        elif due_date and not scope:
+          updates['due_date'] = None
+
   update_task(task_id, **updates)
   tasks = list_tasks()
   found = [t for t in tasks if t['id'] == task_id]

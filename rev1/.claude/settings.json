@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(curl -s -X PATCH http://127.0.0.1:8000/api/tasks/1 -H 'Content-Type: application/json' -d '{\"title\":\"Test update\"}')",
+      "Bash(pkill -f \"python server.py\")",
+      "Bash(curl -s -X PATCH http://127.0.0.1:8000/api/tasks/1 -H 'Content-Type: application/json' -d '{\"title\":\"Test\"}')",
+      "Bash(curl -s -X PATCH http://127.0.0.1:8000/api/tasks/1 -H 'Content-Type: application/json' -d '{\"title\":\"Updated\"}')"
     ]
   }
 }
