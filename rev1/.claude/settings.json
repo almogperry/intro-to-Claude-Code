@@ -12,7 +12,9 @@
       "PowerShell(Get-Process python -ErrorAction SilentlyContinue)",
       "PowerShell(Stop-Process -Force -ErrorAction SilentlyContinue)",
       "Bash(python -m uvicorn kanban_app.server:app --host 127.0.0.1 --port 8000)",
-      "Bash(curl -s -X PATCH http://127.0.0.1:8000/api/tasks/4 -H 'Content-Type: application/json' -d '{\"title\":\"Test Update\"}')"
+      "Bash(curl -s -X PATCH http://127.0.0.1:8000/api/tasks/4 -H 'Content-Type: application/json' -d '{\"title\":\"Test Update\"}')",
+      "Bash(curl -s -X PATCH http://127.0.0.1:8000/api/tasks/4 -H 'Content-Type: application/json' -d '{\"title\":\"Updated Title\",\"description\":\"Updated Description\"}')",
+      "Bash(git commit *)"
     ]
   }
 }

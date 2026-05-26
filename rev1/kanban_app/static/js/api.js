@@ -40,3 +40,17 @@ export async function createSubtask(taskId, body) {
   if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
   return r.json();
 }
+
+export async function updateSubtask(id, payload) {
+  const r = await fetch(`${API_BASE}/subtasks/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+}
+
+export async function deleteSubtask(id) {
+  const r = await fetch(`${API_BASE}/subtasks/${id}`, { method: 'DELETE' });
+  if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+}

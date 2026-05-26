@@ -1,4 +1,4 @@
-import { updateTask, deleteTask, createSubtask } from '../api.js';
+import { updateTask, deleteTask, createSubtask, updateSubtask, deleteSubtask } from '../api.js';
 import { setState, getState } from '../store.js';
 import { animateCardExpand, animateCardCollapse } from '../modal_anim.js';
 
@@ -127,10 +127,18 @@ export function showCardExpanded(parent, taskId, sourceEl) {
     cb.addEventListener('change', async (e) => {
       const subId = parseInt(e.target.dataset.subId);
       try {
-        await updateTask(null); // placeholder; should patch subtask
-        // For now, just toggle locally
+        await updateSubtask(subId, { checked: e.target.checked ? 1 : 0 });
+        setState(s => ({
+          ...s,
+          tasks: s.tasks.map(t =>
+            t.id === taskId
+              ? { ...t, subtasks: t.subtasks.map(sb => sb.id === subId ? { ...sb, checked: e.target.checked ? 1 : 0 } : sb) }
+              : t
+          )
+        }));
       } catch (e) {
         console.error('subtask toggle failed:', e);
+        e.target.checked = !e.target.checked;
       }
     });
   });
@@ -139,7 +147,7 @@ export function showCardExpanded(parent, taskId, sourceEl) {
     btn.addEventListener('click', async (e) => {
       const subId = parseInt(e.target.dataset.delSub);
       try {
-        await fetch(`/api/subtasks/${subId}`, { method: 'DELETE' });
+        await deleteSubtask(subId);
         setState(s => ({
           ...s,
           tasks: s.tasks.map(t =>
