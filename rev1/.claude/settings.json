@@ -30,7 +30,8 @@
       "Bash(curl -s -X POST http://127.0.0.1:8000/api/tasks -H 'Content-Type: application/json' -d '{\"title\":\"Test scope auto\",\"category_id\":1,\"column_id\":1,\"scope\":\"day\"}')",
       "Bash(curl -s -X PATCH http://127.0.0.1:8000/api/tasks/3 -H 'Content-Type: application/json' -d '{\"scope\":\"day\",\"due_date\":\"\"}')",
       "Bash(find g:/GIT/intro-to-Claude-Code -name \"index.html\" -o -name \"*prototype*\" 2>/dev/null | head -10)",
-      "Read(//g/GIT/intro-to-Claude-Code/**)"
+      "Read(//g/GIT/intro-to-Claude-Code/**)",
+      "Bash(python -c \"import sys, json; print\\('Ready'\\)\")"
     ]
   }
 }

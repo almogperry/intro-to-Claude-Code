@@ -1,7 +1,6 @@
 import { createTask } from '../api.js';
 import { setState } from '../store.js';
-import { animateCardExpand, animateCardCollapse } from '../modal_anim.js';
-import { getCardClasses } from '../visual.js';
+import { animateCardCollapse } from '../modal_anim.js';
 
 export function showTaskForm(parent, columns, categories) {
   const modal = document.createElement('div');
@@ -44,7 +43,13 @@ export function showTaskForm(parent, columns, categories) {
   `;
 
   parent.appendChild(modal);
-  animateCardExpand(null, modal);
+  // Center the modal (no animation since there's no source element)
+  const card = modal.querySelector('#card');
+  card.style.left = '50%';
+  card.style.top = '50%';
+  card.style.width = '480px';
+  card.style.height = 'auto';
+  card.style.transform = 'translate(-50%, -50%)';
 
   const closeBtn = document.getElementById('closeBtn');
   const backdrop = document.getElementById('backdrop');
