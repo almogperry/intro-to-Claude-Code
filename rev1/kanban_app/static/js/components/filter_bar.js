@@ -7,28 +7,25 @@ export function renderFilterBar(parent, categories, columns, filterState, onFilt
 
     <div style="display:flex;gap:6px;flex-wrap:wrap" id="categoryChips"></div>
 
-    <select id="priorityFilter" style="padding:6px 8px;border:1px solid #dfe1e6;border-radius:4px;font-size:12px;max-width:120px">
-      <option value="">Priority</option>
-      <option value="high">High</option>
-      <option value="med">Medium</option>
-      <option value="low">Low</option>
+    <select id="priorityFilter" multiple style="padding:6px 8px;border:1px solid #dfe1e6;border-radius:4px;font-size:12px;min-width:120px;min-height:60px">
+      <option value="high" ${filterState.priorities.includes('high') ? 'selected' : ''}>High</option>
+      <option value="med" ${filterState.priorities.includes('med') ? 'selected' : ''}>Medium</option>
+      <option value="low" ${filterState.priorities.includes('low') ? 'selected' : ''}>Low</option>
     </select>
 
-    <select id="dueFilter" style="padding:6px 8px;border:1px solid #dfe1e6;border-radius:4px;font-size:12px;max-width:120px">
-      <option value="">Due date</option>
-      <option value="overdue">Overdue</option>
-      <option value="upcoming">Upcoming</option>
-      <option value="nodue">No deadline</option>
+    <select id="dueFilter" multiple style="padding:6px 8px;border:1px solid #dfe1e6;border-radius:4px;font-size:12px;min-width:130px;min-height:60px">
+      <option value="overdue" ${filterState.dueDates.includes('overdue') ? 'selected' : ''}>Overdue</option>
+      <option value="upcoming" ${filterState.dueDates.includes('upcoming') ? 'selected' : ''}>Upcoming</option>
+      <option value="nodue" ${filterState.dueDates.includes('nodue') ? 'selected' : ''}>No deadline</option>
     </select>
 
     <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">
-      <input type="checkbox" id="hideCompleted">
+      <input type="checkbox" id="hideCompleted" ${filterState.hideCompleted ? 'checked' : ''}>
       <span>Hide completed</span>
     </label>
 
-    <select id="columnFilter" style="padding:6px 8px;border:1px solid #dfe1e6;border-radius:4px;font-size:12px;max-width:120px">
-      <option value="">All columns</option>
-      ${columns.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+    <select id="columnFilter" multiple style="padding:6px 8px;border:1px solid #dfe1e6;border-radius:4px;font-size:12px;min-width:130px;min-height:60px">
+      ${columns.map(c => `<option value="${c.id}" ${filterState.columns.includes(c.id) ? 'selected' : ''}>${c.name}</option>`).join('')}
     </select>
 
     <button id="clearFilters" style="padding:6px 12px;background:#dfe1e6;border:0;border-radius:4px;font-size:12px;cursor:pointer;margin-left:auto">Clear all</button>
@@ -59,19 +56,13 @@ export function renderFilterBar(parent, categories, columns, filterState, onFilt
 
   // Filter change handlers
   filterEl.querySelector('#priorityFilter').addEventListener('change', (e) => {
-    const newPriorities = e.target.value
-      ? [e.target.value]
-      : [];
+    const newPriorities = Array.from(e.target.selectedOptions).map(opt => opt.value);
     onFilterChange({ ...filterState, priorities: newPriorities });
-    e.target.value = ''; // reset dropdown
   });
 
   filterEl.querySelector('#dueFilter').addEventListener('change', (e) => {
-    const newDueDates = e.target.value
-      ? [e.target.value]
-      : [];
+    const newDueDates = Array.from(e.target.selectedOptions).map(opt => opt.value);
     onFilterChange({ ...filterState, dueDates: newDueDates });
-    e.target.value = ''; // reset dropdown
   });
 
   filterEl.querySelector('#hideCompleted').addEventListener('change', (e) => {
@@ -79,11 +70,8 @@ export function renderFilterBar(parent, categories, columns, filterState, onFilt
   });
 
   filterEl.querySelector('#columnFilter').addEventListener('change', (e) => {
-    const newColumns = e.target.value
-      ? [parseInt(e.target.value)]
-      : [];
+    const newColumns = Array.from(e.target.selectedOptions).map(opt => parseInt(opt.value));
     onFilterChange({ ...filterState, columns: newColumns });
-    e.target.value = ''; // reset dropdown
   });
 
   filterEl.querySelector('#clearFilters').addEventListener('click', () => {
