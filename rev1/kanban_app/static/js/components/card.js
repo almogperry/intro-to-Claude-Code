@@ -1,3 +1,5 @@
+import { showCardExpanded } from './card_expanded.js';
+
 export function renderCard(parent, task, categories) {
   const cat = categories.find(c => c.id === task.category_id);
   parent.className = `card prio-${task.priority}`;
@@ -10,4 +12,8 @@ export function renderCard(parent, task, categories) {
       ${task.subtasks.length ? `<span>${task.subtasks.filter(s => s.checked).length}/${task.subtasks.length}</span>` : ''}
     </div>
   `;
+  parent.addEventListener('click', (e) => {
+    if (e.target.closest('.cards')) return; // ignore card container clicks
+    showCardExpanded(document.body, task.id);
+  });
 }
