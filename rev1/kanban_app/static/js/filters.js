@@ -31,5 +31,6 @@ export function getDefaultFilterState() {
     categories: [],     // empty = show all
     priorities: [],     // empty = show all
     dueDates: [],       // empty = show all (scheduled, due, overdue, noDeadline)
+    openMenus: {},      // track which dropdown menus are open
   };
 }

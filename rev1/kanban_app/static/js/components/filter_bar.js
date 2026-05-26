@@ -1,4 +1,4 @@
-function createCheckboxDropdown(label, options, selectedValues, onSelection) {
+function createCheckboxDropdown(label, options, selectedValues, onSelection, isOpen, onMenuToggle) {
   const container = document.createElement('div');
   container.style.cssText = 'position:relative;display:inline-block';
 
@@ -7,7 +7,7 @@ function createCheckboxDropdown(label, options, selectedValues, onSelection) {
   btn.textContent = label;
 
   const menu = document.createElement('div');
-  menu.style.cssText = 'display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #dfe1e6;border-radius:4px;z-index:10;min-width:150px;margin-top:2px;box-shadow:0 2px 8px rgba(0,0,0,0.1)';
+  menu.style.cssText = `display:${isOpen ? 'block' : 'none'};position:absolute;top:100%;left:0;background:#fff;border:1px solid #dfe1e6;border-radius:4px;z-index:10;min-width:150px;margin-top:2px;box-shadow:0 2px 8px rgba(0,0,0,0.1)`;
 
   options.forEach(opt => {
     const label = document.createElement('label');
@@ -27,11 +27,11 @@ function createCheckboxDropdown(label, options, selectedValues, onSelection) {
 
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
-    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    onMenuToggle(!isOpen);
   });
 
   document.addEventListener('click', () => {
-    menu.style.display = 'none';
+    if (isOpen) onMenuToggle(false);
   });
 
   container.appendChild(btn);
@@ -59,6 +59,8 @@ export function renderFilterBar(parent, categories, columns, filterState, onFilt
     const selected = Array.from(categoryDropdown.menu.querySelectorAll('input:checked')).map(cb => parseInt(cb.value));
     const newCategories = selected.length === categoryOptions.length ? [] : selected;
     onFilterChange({ ...filterState, categories: newCategories });
+  }, filterState.openMenus?.category, (isOpen) => {
+    onFilterChange({ ...filterState, openMenus: { ...filterState.openMenus, category: isOpen } });
   });
   filterEl.querySelector('#categoryFilterContainer').appendChild(categoryDropdown.container);
 
@@ -72,6 +74,8 @@ export function renderFilterBar(parent, categories, columns, filterState, onFilt
     const selected = Array.from(priorityDropdown.menu.querySelectorAll('input:checked')).map(cb => cb.value);
     const newPriorities = selected.length === priorityOptions.length ? [] : selected;
     onFilterChange({ ...filterState, priorities: newPriorities });
+  }, filterState.openMenus?.priority, (isOpen) => {
+    onFilterChange({ ...filterState, openMenus: { ...filterState.openMenus, priority: isOpen } });
   });
   filterEl.querySelector('#priorityFilterContainer').appendChild(priorityDropdown.container);
 
@@ -86,6 +90,8 @@ export function renderFilterBar(parent, categories, columns, filterState, onFilt
     const selected = Array.from(dueDropdown.menu.querySelectorAll('input:checked')).map(cb => cb.value);
     const newDueDates = selected.length === dueOptions.length ? [] : selected;
     onFilterChange({ ...filterState, dueDates: newDueDates });
+  }, filterState.openMenus?.due, (isOpen) => {
+    onFilterChange({ ...filterState, openMenus: { ...filterState.openMenus, due: isOpen } });
   });
   filterEl.querySelector('#dueFilterContainer').appendChild(dueDropdown.container);
 
