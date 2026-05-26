@@ -3,67 +3,99 @@ import { setState, getState } from './store.js';
 
 export function initDnD(boardEl) {
   const columns = boardEl.querySelectorAll('.column');
+  let draggedCard = null;
 
-  columns.forEach(colEl => {
-    const cardsEl = colEl.querySelector('.cards');
-    new Sortable(cardsEl, {
-      group: 'tasks',
-      animation: 150,
-      ghostClass: 'ghost',
-      delay: 200,
-      delayOnTouchOnly: true,
-      onEnd: async (evt) => {
-        const cardEl = evt.item;
-        const taskId = parseInt(cardEl.dataset.taskId);
+  // Track dragged card
+  document.addEventListener('dragstart', (e) => {
+    if (e.target.classList.contains('card')) {
+      draggedCard = e.target;
+      e.target.style.opacity = '0.5';
+    }
+  });
 
-        // Determine column based on drop Y coordinate
-        const dropY = evt.pageY;
-        let targetColId = null;
-        let newPos = 0;
+  document.addEventListener('dragend', (e) => {
+    if (draggedCard) {
+      draggedCard.style.opacity = '1';
+    }
+  });
 
-        for (const col of columns) {
-          const rect = col.getBoundingClientRect();
-          const colTop = rect.top + window.scrollY;
-          const colBottom = rect.bottom + window.scrollY;
+  // Allow drops anywhere
+  document.addEventListener('dragover', (e) => {
+    if (draggedCard) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    }
+  });
 
-          if (dropY >= colTop && dropY <= colBottom) {
-            targetColId = parseInt(col.dataset.colId);
-            const cardsContainer = col.querySelector('.cards');
-            const cardElsInCol = Array.from(cardsContainer.children);
+  document.addEventListener('dragenter', (e) => {
+    if (draggedCard) {
+      e.preventDefault();
+    }
+  });
 
-            // Find position within column by comparing Y coordinates
-            let insertPos = cardElsInCol.length;
-            for (let i = 0; i < cardElsInCol.length; i++) {
-              const cardRect = cardElsInCol[i].getBoundingClientRect();
-              const cardMidY = cardRect.top + cardRect.height / 2 + window.scrollY;
-              if (dropY < cardMidY) {
-                insertPos = i;
-                break;
-              }
-            }
-            newPos = insertPos;
+  // Handle drop
+  document.addEventListener('drop', async (e) => {
+    if (!draggedCard) return;
+    e.preventDefault();
+
+    const taskId = parseInt(draggedCard.dataset.taskId);
+    const dropX = e.pageX;
+    let targetColId = null;
+    let newPos = 0;
+
+    // Find column by horizontal position
+    for (const col of columns) {
+      const rect = col.getBoundingClientRect();
+      const colLeft = rect.left + window.scrollX;
+      const colRight = rect.right + window.scrollX;
+
+      if (dropX >= colLeft && dropX <= colRight) {
+        targetColId = parseInt(col.dataset.colId);
+        const cardsContainer = col.querySelector('.cards');
+        const cardEls = Array.from(cardsContainer.children).filter(el => el !== draggedCard);
+
+        // Calculate position by Y coordinate within the column
+        const dropY = e.pageY;
+        let insertPos = cardEls.length;
+        for (let i = 0; i < cardEls.length; i++) {
+          const cardRect = cardEls[i].getBoundingClientRect();
+          const cardMidY = cardRect.top + cardRect.height / 2 + window.scrollY;
+          if (dropY < cardMidY) {
+            insertPos = i;
             break;
           }
         }
-
-        if (targetColId === null) return;
-
-        const state = getState();
-        const oldTask = state.tasks.find(t => t.id === taskId);
-
-        try {
-          await updateTask(taskId, { column_id: targetColId, position: newPos });
-          setState(s => {
-            const tasks = s.tasks.map(t =>
-              t.id === taskId ? { ...t, column_id: targetColId, position: newPos } : t
-            );
-            return { ...s, tasks };
-          });
-        } catch (e) {
-          alert('Failed to move task: ' + e.message);
-          location.reload();
-        }
+        newPos = insertPos;
+        break;
       }
-    });
+    }
+
+    if (targetColId === null) {
+      draggedCard = null;
+      return;
+    }
+
+    const state = getState();
+    const oldTask = state.tasks.find(t => t.id === taskId);
+
+    if (oldTask.column_id === targetColId && oldTask.position === newPos) {
+      draggedCard = null;
+      return;
+    }
+
+    try {
+      await updateTask(taskId, { column_id: targetColId, position: newPos });
+      setState(s => {
+        const tasks = s.tasks.map(t =>
+          t.id === taskId ? { ...t, column_id: targetColId, position: newPos } : t
+        );
+        return { ...s, tasks };
+      });
+    } catch (e) {
+      alert('Failed to move task: ' + e.message);
+      location.reload();
+    }
+
+    draggedCard = null;
   });
 }
