@@ -38,7 +38,7 @@ def post_task(task: TaskIn):
 
 @router.patch("/tasks/{task_id}", response_model=TaskOut)
 def patch_task(task_id: int, update: TaskUpdate):
-  updates = {k: v for k, v in update.dict().items() if v is not None}
+  updates = update.model_dump(exclude_unset=True)
   if not updates:
     raise HTTPException(status_code=400, detail="no fields to update")
 
