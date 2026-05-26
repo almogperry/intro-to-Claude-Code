@@ -78,7 +78,7 @@ export function renderFilterBar(parent, categories, columns, filterState, onFilt
   const dueOptions = [
     { value: 'overdue', label: 'Overdue' },
     { value: 'due', label: 'Due' },
-    { value: 'upcoming', label: 'Upcoming' },
+    { value: 'scheduled', label: 'Scheduled' },
     { value: 'noDeadline', label: 'No deadline' },
   ];
   const dueDropdown = createCheckboxDropdown('Due', dueOptions, filterState.dueDates, () => {

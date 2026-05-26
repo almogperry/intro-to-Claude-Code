@@ -3,49 +3,31 @@ function parseDate(dateStr) {
   return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
 }
 
-export function isWithinDueWindow(due_date, scope) {
-  if (!due_date || !scope) return false;
-
+function getWindowStart(due_date, scope) {
   const taskDue = parseDate(due_date);
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  taskDue.setHours(0, 0, 0, 0);
-
-  if (scope === 'day') {
-    const windowStart = new Date(taskDue.getTime() - 3 * 60 * 60 * 1000);
-    windowStart.setHours(0, 0, 0, 0);
-    return now.getTime() >= windowStart.getTime() && now.getTime() < taskDue.getTime();
-  }
-  if (scope === 'week') {
-    const windowStart = new Date(taskDue.getTime() - 3 * 24 * 60 * 60 * 1000);
-    windowStart.setHours(0, 0, 0, 0);
-    return now.getTime() >= windowStart.getTime() && now.getTime() < taskDue.getTime();
-  }
-  if (scope === 'month') {
-    const windowStart = new Date(taskDue.getTime() - 7 * 24 * 60 * 60 * 1000);
-    windowStart.setHours(0, 0, 0, 0);
-    return now.getTime() >= windowStart.getTime() && now.getTime() < taskDue.getTime();
-  }
-  if (scope === 'year') {
-    const windowStart = new Date(taskDue.getTime() - 90 * 24 * 60 * 60 * 1000);
-    windowStart.setHours(0, 0, 0, 0);
-    return now.getTime() >= windowStart.getTime() && now.getTime() < taskDue.getTime();
-  }
-  return false;
+  if (scope === 'day') return new Date(taskDue.getTime() - 3 * 60 * 60 * 1000);
+  if (scope === 'week') return new Date(taskDue.getTime() - 3 * 24 * 60 * 60 * 1000);
+  if (scope === 'month') return new Date(taskDue.getTime() - 7 * 24 * 60 * 60 * 1000);
+  if (scope === 'year') return new Date(taskDue.getTime() - 90 * 24 * 60 * 60 * 1000);
+  return taskDue;
 }
 
 export function getDueStatus(due_date, scope) {
-  if (!due_date) return 'noDeadline';
+  if (!due_date || !scope) return 'noDeadline';
 
   const taskDue = parseDate(due_date);
   const now = new Date();
   now.setHours(0, 0, 0, 0);
   taskDue.setHours(0, 0, 0, 0);
 
-  const todayTime = now.getTime();
-  const taskTime = taskDue.getTime();
+  const currentTime = now.getTime();
+  const dueTime = taskDue.getTime();
 
-  if (taskTime < todayTime) return 'overdue';
-  if (taskTime === todayTime) return 'due';
-  return 'upcoming';
+  if (currentTime > dueTime) return 'overdue';
+
+  const windowStart = getWindowStart(due_date, scope);
+  windowStart.setHours(0, 0, 0, 0);
+
+  if (currentTime >= windowStart.getTime()) return 'due';
+  return 'scheduled';
 }

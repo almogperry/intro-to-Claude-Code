@@ -37,7 +37,7 @@ export function getDefaultFilterState() {
   return {
     categories: [],     // empty = show all
     priorities: [],     // empty = show all
-    dueDates: [],       // empty = show all (upcoming, overdue, nodue)
+    dueDates: [],       // empty = show all (scheduled, due, overdue, noDeadline)
     columns: [],        // empty = show all
   };
 }

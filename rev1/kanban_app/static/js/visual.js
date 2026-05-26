@@ -15,8 +15,8 @@ export function getCardClasses(task) {
     classes.push('overdue');
   } else if (dueStatus === 'due') {
     classes.push('due');
-  } else if (dueStatus === 'upcoming') {
-    classes.push('upcoming');
+  } else if (dueStatus === 'scheduled') {
+    classes.push('scheduled');
   }
 
   return classes;

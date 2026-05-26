@@ -17,23 +17,20 @@ def get_window_start(due_date, scope):
   return task_due
 
 def get_due_status(due_date, scope=None):
-  """Classify task: noDeadline, upcoming, due, or overdue."""
-  if not due_date:
+  """Classify task: noDeadline, scheduled, due, or overdue."""
+  if not due_date or not scope:
     return 'noDeadline'
   try:
     task_due = datetime.strptime(due_date, '%Y-%m-%d').date()
-    today = datetime.now().date()
+    now = datetime.now().date()
 
-    if task_due < today:
+    if now > task_due:
       return 'overdue'
-    elif task_due == today:
+
+    window_start = get_window_start(due_date, scope)
+    if now >= window_start:
       return 'due'
 
-    if scope:
-      window_start = get_window_start(due_date, scope)
-      if today >= window_start:
-        return 'upcoming'
-
-    return 'noDeadline'
+    return 'scheduled'
   except:
     return 'noDeadline'
