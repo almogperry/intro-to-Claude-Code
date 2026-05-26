@@ -26,7 +26,8 @@
       "Bash(curl -s -X PATCH http://127.0.0.1:8000/api/tasks/3 -H 'Content-Type: application/json' -d '{\"scope\":null}')",
       "Bash(curl -s -X PATCH http://127.0.0.1:8000/api/tasks/3 -H 'Content-Type: application/json' -d '{\"scope\":\"\"}')",
       "Bash(curl -s -X PATCH http://127.0.0.1:8000/api/tasks/3 -H 'Content-Type: application/json' -d '{\"scope\":\"day\",\"due_date\":\"2026-06-15\"}')",
-      "Bash(python -c \"import sys, json; d=json.load\\(sys.stdin\\); print\\('Ready'\\)\")"
+      "Bash(python -c \"import sys, json; d=json.load\\(sys.stdin\\); print\\('Ready'\\)\")",
+      "Bash(curl -s -X POST http://127.0.0.1:8000/api/tasks -H 'Content-Type: application/json' -d '{\"title\":\"Test scope auto\",\"category_id\":1,\"column_id\":1,\"scope\":\"day\"}')"
     ]
   }
 }

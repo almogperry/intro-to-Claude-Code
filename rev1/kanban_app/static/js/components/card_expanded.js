@@ -133,15 +133,33 @@ export function showCardExpanded(parent, taskId, sourceEl) {
   backdrop.addEventListener('click', close);
 
   saveBtn.addEventListener('click', async () => {
+    const scope = document.getElementById('scope').value || null;
+    const due_date = document.getElementById('due').value || null;
+    const due_time = document.getElementById('time').value || null;
+
+    // Validate: if scope is set, both due_date and due_time must be set
+    if (scope && (!due_date || !due_time)) {
+      alert('Invalid due date/time');
+      // Auto-populate with default values
+      const days = {day: 3, week: 21, month: 90, year: 365}[scope] || 0;
+      if (days) {
+        const d = new Date();
+        d.setDate(d.getDate() + days);
+        document.getElementById('due').value = d.toISOString().split('T')[0];
+        document.getElementById('time').value = '20:00';
+      }
+      return;
+    }
+
     const updates = {
       title: document.getElementById('title').value,
       description: document.getElementById('desc').value || null,
       category_id: parseInt(document.getElementById('cat').value),
       column_id: parseInt(document.getElementById('col').value),
       priority: document.getElementById('prio').value,
-      scope: document.getElementById('scope').value || null,
-      due_date: document.getElementById('due').value || null,
-      due_time: document.getElementById('time').value || null,
+      scope: scope,
+      due_date: due_date,
+      due_time: due_time,
     };
     try {
       await updateTask(taskId, updates);

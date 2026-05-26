@@ -23,6 +23,10 @@ def post_task(task: TaskIn):
   if task.scope and not due_date:
     due_date, due_time = get_default_due_date(task.scope)
 
+  # Validate: if scope is set, both due_date and due_time must be set
+  if task.scope and (not due_date or not due_time):
+    raise HTTPException(status_code=400, detail="scope requires due_date and due_time")
+
   all_tasks = list_tasks()
   col_tasks = [t for t in all_tasks if t['column_id'] == task.column_id]
   pos = calc_insert_position(col_tasks, task.priority, due_date)
@@ -64,6 +68,14 @@ def patch_task(task_id: int, update: TaskUpdate):
       # If clearing scope, also clear due_date
       updates['due_date'] = None
       updates['due_time'] = None
+
+  # Validate: if scope is set, both due_date and due_time must be set
+  final_scope = updates.get('scope', task.get('scope') if task else None)
+  final_due_date = updates.get('due_date', task.get('due_date') if task else None)
+  final_due_time = updates.get('due_time', task.get('due_time') if task else None)
+
+  if final_scope and (not final_due_date or not final_due_time):
+    raise HTTPException(status_code=400, detail="scope requires due_date and due_time")
 
   update_task(task_id, **updates)
   tasks = list_tasks()
