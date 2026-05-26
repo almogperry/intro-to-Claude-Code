@@ -3,13 +3,35 @@ function parseDate(dateStr) {
   return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
 }
 
-function getWindowStart(due_date, scope) {
+export function isWithinDueWindow(due_date, scope) {
+  if (!due_date || !scope) return false;
+
   const taskDue = parseDate(due_date);
-  if (scope === 'day') return new Date(taskDue.getTime() - 3 * 60 * 60 * 1000);
-  if (scope === 'week') return new Date(taskDue.getTime() - 3 * 24 * 60 * 60 * 1000);
-  if (scope === 'month') return new Date(taskDue.getTime() - 7 * 24 * 60 * 60 * 1000);
-  if (scope === 'year') return new Date(taskDue.getTime() - 90 * 24 * 60 * 60 * 1000);
-  return taskDue;
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  taskDue.setHours(0, 0, 0, 0);
+
+  if (scope === 'day') {
+    const windowStart = new Date(taskDue.getTime() - 3 * 60 * 60 * 1000);
+    windowStart.setHours(0, 0, 0, 0);
+    return now.getTime() >= windowStart.getTime() && now.getTime() < taskDue.getTime();
+  }
+  if (scope === 'week') {
+    const windowStart = new Date(taskDue.getTime() - 3 * 24 * 60 * 60 * 1000);
+    windowStart.setHours(0, 0, 0, 0);
+    return now.getTime() >= windowStart.getTime() && now.getTime() < taskDue.getTime();
+  }
+  if (scope === 'month') {
+    const windowStart = new Date(taskDue.getTime() - 7 * 24 * 60 * 60 * 1000);
+    windowStart.setHours(0, 0, 0, 0);
+    return now.getTime() >= windowStart.getTime() && now.getTime() < taskDue.getTime();
+  }
+  if (scope === 'year') {
+    const windowStart = new Date(taskDue.getTime() - 90 * 24 * 60 * 60 * 1000);
+    windowStart.setHours(0, 0, 0, 0);
+    return now.getTime() >= windowStart.getTime() && now.getTime() < taskDue.getTime();
+  }
+  return false;
 }
 
 export function getDueStatus(due_date, scope) {
@@ -25,10 +47,5 @@ export function getDueStatus(due_date, scope) {
 
   if (taskTime < todayTime) return 'overdue';
   if (taskTime === todayTime) return 'due';
-
-  const windowStart = getWindowStart(due_date, scope);
-  windowStart.setHours(0, 0, 0, 0);
-  if (now.getTime() >= windowStart.getTime()) return 'upcoming';
-
-  return 'noDeadline';
+  return 'upcoming';
 }
