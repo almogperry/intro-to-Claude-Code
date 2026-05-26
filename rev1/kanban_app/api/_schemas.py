@@ -47,3 +47,14 @@ class TaskIn(BaseModel):
   scope: Optional[str] = None
   due_date: Optional[str] = None
   due_time: Optional[str] = None
+
+class TaskUpdate(BaseModel):
+  title: Optional[str] = None
+  description: Optional[str] = None
+  category_id: Optional[int] = None
+  column_id: Optional[int] = None
+  priority: Optional[str] = None
+  scope: Optional[str] = None
+  due_date: Optional[str] = None
+  due_time: Optional[str] = None
+  position: Optional[int] = None

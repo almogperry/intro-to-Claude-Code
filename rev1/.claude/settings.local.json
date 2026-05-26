@@ -8,7 +8,8 @@
       "Bash(curl -s http://127.0.0.1:8000/)",
       "Bash(python -m json.tool)",
       "Bash(curl -s -X POST http://127.0.0.1:8000/api/tasks -H 'Content-Type: application/json' -d '{\"title\":\"Buy milk\",\"category_id\":1,\"column_id\":1,\"priority\":\"med\"}')",
-      "Bash(curl -i -X POST http://127.0.0.1:8000/api/tasks -H 'Content-Type: application/json' -d '{\"title\":\"Buy milk\",\"category_id\":1,\"column_id\":1,\"priority\":\"med\"}')"
+      "Bash(curl -i -X POST http://127.0.0.1:8000/api/tasks -H 'Content-Type: application/json' -d '{\"title\":\"Buy milk\",\"category_id\":1,\"column_id\":1,\"priority\":\"med\"}')",
+      "Bash(curl -s -X PATCH http://127.0.0.1:8000/api/tasks/1 -H 'Content-Type: application/json' -d '{\"title\":\"Updated task\"}')"
     ]
   }
 }

@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from db.repos.tasks import list_tasks, create_task, update_task, delete_task
 from db.repos.columns import list_cols
 from db.repos.categories import list_cats
-from api._schemas import StateOut, TaskIn, TaskOut
+from api._schemas import StateOut, TaskIn, TaskOut, TaskUpdate
 from domain.tasks import calc_insert_position
 from typing import Optional
 
@@ -37,16 +37,11 @@ def post_task(task: TaskIn):
   return TaskOut(**t)
 
 @router.patch("/tasks/{task_id}", response_model=TaskOut)
-def patch_task(task_id: int, title: Optional[str] = None, description: Optional[str] = None,
-               category_id: Optional[int] = None, column_id: Optional[int] = None,
-               priority: Optional[str] = None, scope: Optional[str] = None,
-               due_date: Optional[str] = None, due_time: Optional[str] = None, position: Optional[int] = None):
-  kw = {k: v for k, v in [('title', title), ('description', description), ('category_id', category_id),
-                          ('column_id', column_id), ('priority', priority), ('scope', scope),
-                          ('due_date', due_date), ('due_time', due_time), ('position', position)] if v is not None}
-  if not kw:
+def patch_task(task_id: int, update: TaskUpdate):
+  updates = {k: v for k, v in update.dict().items() if v is not None}
+  if not updates:
     raise HTTPException(status_code=400, detail="no fields to update")
-  update_task(task_id, **kw)
+  update_task(task_id, **updates)
   tasks = list_tasks()
   found = [t for t in tasks if t['id'] == task_id]
   return TaskOut(**found[0]) if found else None
