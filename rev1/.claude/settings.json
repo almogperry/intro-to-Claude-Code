@@ -19,7 +19,8 @@
       "Bash(curl -s -X PATCH http://127.0.0.1:8000/api/subtasks/1 -H 'Content-Type: application/json' -d '{\"checked\":1}')",
       "Bash(python -c \"import sys, json; d=json.load\\(sys.stdin\\); print\\(f'Tasks: {len\\(d[\\\\\"tasks\\\\\"]\\)}, Columns: {len\\(d[\\\\\"columns\\\\\"]\\)}, Categories: {len\\(d[\\\\\"categories\\\\\"]\\)}'\\)\")",
       "Bash(curl -s -X POST http://127.0.0.1:8000/api/tasks/4/subtasks -H 'Content-Type: application/json' -d '{\"body\":\"Another test subtask\"}')",
-      "Bash(python -c \"import sys, json; d=json.load\\(sys.stdin\\); print\\('API alive'\\)\")"
+      "Bash(python -c \"import sys, json; d=json.load\\(sys.stdin\\); print\\('API alive'\\)\")",
+      "Bash(curl -s -X POST http://127.0.0.1:8000/api/tasks/4/subtasks -H 'Content-Type: application/json' -d '{\"body\":\"Different subtask\"}')"
     ]
   }
 }

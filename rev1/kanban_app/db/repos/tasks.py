@@ -35,9 +35,12 @@ def create_task(title, category_id, column_id, priority="med", desc=None, scope=
 def update_task(task_id, **kw):
   conn = get_conn()
   kw['updated_at'] = datetime.utcnow().isoformat()
-  for k, v in kw.items():
-    if v is not None:
-      conn.execute(f"UPDATE tasks SET {k} = ? WHERE id = ?", (v, task_id))
+  if not kw:
+    return
+  set_clauses = [f"{k} = ?" for k in kw.keys()]
+  values = list(kw.values()) + [task_id]
+  query = f"UPDATE tasks SET {', '.join(set_clauses)} WHERE id = ?"
+  conn.execute(query, values)
   conn.commit()
   conn.close()
 
