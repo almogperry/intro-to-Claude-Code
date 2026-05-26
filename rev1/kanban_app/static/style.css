@@ -26,7 +26,6 @@ header .btn { padding: 6px 12px; background: #0052cc; color: #fff; border: 0; bo
 .card.prio-high { background: #d4edda; border-left: 3px solid #28a745; }
 .card.prio-med { background: #fff3cd; border-left: 3px solid #ffc107; }
 .card.prio-low { background: #f8d7da; border-left: 3px solid #dc3545; }
-.card.scheduled { outline: 2px solid #172b4d; outline-offset: -2px; }
 .card.due { outline: 2px solid #ffc107; outline-offset: -2px; }
 .card.overdue { outline: 2px solid #8b0000; outline-offset: -2px; }
 .card.completed { opacity: 0.75; position: relative; }
