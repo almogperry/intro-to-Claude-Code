@@ -15,41 +15,53 @@ export function initDnD(boardEl) {
       onEnd: async (evt) => {
         const cardEl = evt.item;
         const taskId = parseInt(cardEl.dataset.taskId);
-        const newColId = parseInt(evt.to.closest('.column').dataset.colId);
-        const newPos = Array.from(evt.to.children).indexOf(cardEl);
+
+        // Determine column based on drop Y coordinate
+        const dropY = evt.pageY;
+        let targetColId = null;
+        let newPos = 0;
+
+        for (const col of columns) {
+          const rect = col.getBoundingClientRect();
+          const colTop = rect.top + window.scrollY;
+          const colBottom = rect.bottom + window.scrollY;
+
+          if (dropY >= colTop && dropY <= colBottom) {
+            targetColId = parseInt(col.dataset.colId);
+            const cardsContainer = col.querySelector('.cards');
+            const cardElsInCol = Array.from(cardsContainer.children);
+
+            // Find position within column by comparing Y coordinates
+            let insertPos = cardElsInCol.length;
+            for (let i = 0; i < cardElsInCol.length; i++) {
+              const cardRect = cardElsInCol[i].getBoundingClientRect();
+              const cardMidY = cardRect.top + cardRect.height / 2 + window.scrollY;
+              if (dropY < cardMidY) {
+                insertPos = i;
+                break;
+              }
+            }
+            newPos = insertPos;
+            break;
+          }
+        }
+
+        if (targetColId === null) return;
 
         const state = getState();
         const oldTask = state.tasks.find(t => t.id === taskId);
 
-        // If cross-column, auto-sort in destination
-        if (oldTask.column_id !== newColId) {
-          try {
-            // Update task column
-            await updateTask(taskId, { column_id: newColId, position: newPos });
-            setState(s => {
-              const tasks = s.tasks.map(t =>
-                t.id === taskId ? { ...t, column_id: newColId, position: newPos } : t
-              );
-              return { ...s, tasks };
-            });
-          } catch (e) {
-            alert('Failed to move task: ' + e.message);
-            location.reload();
-          }
-        } else {
-          // Within column, keep dropped position
-          try {
-            await updateTask(taskId, { position: newPos });
-            setState(s => {
-              const tasks = s.tasks.map(t =>
-                t.id === taskId ? { ...t, position: newPos } : t
-              );
-              return { ...s, tasks };
-            });
-          } catch (e) {
-            alert('Failed to reorder task: ' + e.message);
-            location.reload();
-          }
+        try {
+          await updateTask(taskId, { column_id: targetColId, position: newPos });
+          setState(s => {
+            const tasks = s.tasks.map(t =>
+              t.id === taskId ? { ...t, column_id: targetColId, position: newPos } : t
+            );
+            return { ...s, tasks };
+          });
+        } catch (e) {
+          alert('Failed to move task: ' + e.message);
+          location.reload();
         }
       }
     });
