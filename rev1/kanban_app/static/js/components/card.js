@@ -1,8 +1,9 @@
 import { showCardExpanded } from './card_expanded.js';
+import { getCardClasses } from '../visual.js';
 
 export function renderCard(parent, task, categories) {
   const cat = categories.find(c => c.id === task.category_id);
-  parent.className = `card prio-${task.priority}`;
+  parent.className = `card ${getCardClasses(task).join(' ')}`;
   parent.dataset.taskId = task.id;
   parent.style.cursor = 'pointer';
   parent.innerHTML = `
