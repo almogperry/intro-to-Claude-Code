@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Body
-from db.repos.tasks import list_tasks
-from db.repos.subtasks import create_sub, update_sub, delete_sub
-from api._schemas import SubtaskOut
+from ..db.repos.tasks import list_tasks
+from ..db.repos.subtasks import create_sub, update_sub, delete_sub
+from ._schemas import SubtaskOut
 from typing import Optional
 
 router = APIRouter()

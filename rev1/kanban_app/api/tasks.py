@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException
-from db.repos.tasks import list_tasks, create_task, update_task, delete_task
-from db.repos.columns import list_cols
-from db.repos.categories import list_cats
-from api._schemas import StateOut, TaskIn, TaskOut, TaskUpdate
-from domain.tasks import calc_insert_position
+from ..db.repos.tasks import list_tasks, create_task, update_task, delete_task
+from ..db.repos.columns import list_cols
+from ..db.repos.categories import list_cats
+from ._schemas import StateOut, TaskIn, TaskOut, TaskUpdate
+from ..domain.tasks import calc_insert_position
 from typing import Optional
 
 router = APIRouter()

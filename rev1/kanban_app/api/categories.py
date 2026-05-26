@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Body
-from db.repos.categories import list_cats, create_cat, delete_cat
-from api._schemas import CategoryOut
+from ..db.repos.categories import list_cats, create_cat, delete_cat
+from ._schemas import CategoryOut
 from typing import List
 
 router = APIRouter()

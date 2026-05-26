@@ -1,4 +1,4 @@
-from db.connection import get_conn
+from ..connection import get_conn
 from datetime import datetime
 
 def list_tasks():

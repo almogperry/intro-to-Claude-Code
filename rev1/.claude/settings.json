@@ -5,7 +5,14 @@
       "Bash(curl -s -X PATCH http://127.0.0.1:8000/api/tasks/1 -H 'Content-Type: application/json' -d '{\"title\":\"Test update\"}')",
       "Bash(pkill -f \"python server.py\")",
       "Bash(curl -s -X PATCH http://127.0.0.1:8000/api/tasks/1 -H 'Content-Type: application/json' -d '{\"title\":\"Test\"}')",
-      "Bash(curl -s -X PATCH http://127.0.0.1:8000/api/tasks/1 -H 'Content-Type: application/json' -d '{\"title\":\"Updated\"}')"
+      "Bash(curl -s -X PATCH http://127.0.0.1:8000/api/tasks/1 -H 'Content-Type: application/json' -d '{\"title\":\"Updated\"}')",
+      "Bash(Get-Process python *)",
+      "Bash(Stop-Process -Force -ErrorAction SilentlyContinue)",
+      "Bash(Start-Sleep -Milliseconds 500)",
+      "PowerShell(Get-Process python -ErrorAction SilentlyContinue)",
+      "PowerShell(Stop-Process -Force -ErrorAction SilentlyContinue)",
+      "Bash(python -m uvicorn kanban_app.server:app --host 127.0.0.1 --port 8000)",
+      "Bash(curl -s -X PATCH http://127.0.0.1:8000/api/tasks/4 -H 'Content-Type: application/json' -d '{\"title\":\"Test Update\"}')"
     ]
   }
 }

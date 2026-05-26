@@ -3,9 +3,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from pathlib import Path
-from config import PORT
-from db.init import init_db
-from api import router as api_router
+from .config import PORT
+from .db.init import init_db
+from .api import router as api_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

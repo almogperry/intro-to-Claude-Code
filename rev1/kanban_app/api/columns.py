@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Body
-from db.repos.columns import list_cols, create_col, update_col, delete_col
-from api._schemas import ColumnOut
+from ..db.repos.columns import list_cols, create_col, update_col, delete_col
+from ._schemas import ColumnOut
 from typing import List
 
 router = APIRouter()

@@ -1,6 +1,7 @@
 from datetime import datetime
-from db.connection import get_conn
+from .connection import get_conn
 import sqlite3
+from pathlib import Path
 
 def seed_defaults():
   conn = get_conn()
@@ -31,7 +32,8 @@ def init_db():
   # check if tables exist
   c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='columns'")
   if not c.fetchone():
-    with open("db/schema.sql") as f:
+    schema_path = Path(__file__).parent / "schema.sql"
+    with open(schema_path) as f:
       c.executescript(f.read())
 
   conn.commit()

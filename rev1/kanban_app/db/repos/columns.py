@@ -1,4 +1,4 @@
-from db.connection import get_conn
+from ..connection import get_conn
 
 def list_cols():
   conn = get_conn()

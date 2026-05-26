@@ -1,4 +1,4 @@
-from db.connection import get_conn
+from ..connection import get_conn
 
 def create_sub(task_id, body, position):
   conn = get_conn()
