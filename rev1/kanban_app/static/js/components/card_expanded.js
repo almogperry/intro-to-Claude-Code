@@ -166,6 +166,27 @@ export function showCardExpanded(parent, taskId, sourceEl) {
     }
   });
 
+  // Auto-populate due_date when scope changes
+  const scopeSelect = document.getElementById('scope');
+  scopeSelect.addEventListener('change', (e) => {
+    const scope = e.target.value;
+    const dueInput = document.getElementById('due');
+    const timeInput = document.getElementById('time');
+
+    if (!scope) {
+      dueInput.value = '';
+      timeInput.value = '';
+    } else {
+      const days = {day: 3, week: 21, month: 90, year: 365}[scope] || 0;
+      if (days) {
+        const d = new Date();
+        d.setDate(d.getDate() + days);
+        dueInput.value = d.toISOString().split('T')[0];
+        timeInput.value = '20:00';
+      }
+    }
+  });
+
   addSubBtn.addEventListener('click', async () => {
     const bodyInput = document.getElementById('newSubBody');
     const body = bodyInput.value.trim();
