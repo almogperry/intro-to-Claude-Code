@@ -171,6 +171,11 @@ export function showCardExpanded(parent, taskId, sourceEl) {
     const body = bodyInput.value.trim();
     if (!body) return;
 
+    if (task.subtasks.some(s => s.body === body)) {
+      alert('Subtask already exist');
+      return;
+    }
+
     const tempId = Math.random();
     const subEl = document.createElement('div');
     subEl.style.cssText = 'display:flex;gap:8px;align-items:center';

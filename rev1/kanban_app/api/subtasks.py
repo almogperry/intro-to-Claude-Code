@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, HTTPException
 from pydantic import BaseModel
 from ..db.repos.tasks import list_tasks
 from ..db.repos.subtasks import create_sub, update_sub, delete_sub
@@ -17,6 +17,8 @@ router = APIRouter()
 def post_subtask(task_id: int, payload: SubtaskCreate):
   all_tasks = list_tasks()
   task_subs = next((t['subtasks'] for t in all_tasks if t['id'] == task_id), [])
+  if any(s['body'] == payload.body for s in task_subs):
+    raise HTTPException(status_code=400, detail="Subtask already exist")
   pos = len(task_subs)
   sub = create_sub(task_id, payload.body, pos)
   return SubtaskOut(**sub)
