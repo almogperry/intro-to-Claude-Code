@@ -1,4 +1,5 @@
 import { getState } from './store.js';
+import { isOverdue, isUpcoming } from './due_window.js';
 
 export function getCardClasses(task) {
   const classes = [`prio-${task.priority}`];
@@ -11,17 +12,10 @@ export function getCardClasses(task) {
   }
 
   // Check if task is upcoming or overdue
-  if (task.due_date) {
-    const taskDue = new Date(task.due_date);
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-    taskDue.setHours(0, 0, 0, 0);
-
-    if (taskDue.getTime() < now.getTime()) {
-      classes.push('overdue');
-    } else if (taskDue.getTime() > now.getTime()) {
-      classes.push('upcoming');
-    }
+  if (isOverdue(task.due_date)) {
+    classes.push('overdue');
+  } else if (isUpcoming(task.due_date)) {
+    classes.push('upcoming');
   }
 
   return classes;
