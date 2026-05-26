@@ -23,11 +23,11 @@ header .btn { padding: 6px 12px; background: #0052cc; color: #fff; border: 0; bo
 .column-header .count { color: var(--muted); font-weight: 400; }
 .cards { display: flex; flex-direction: column; gap: 8px; }
 .card { background: var(--card-bg); border-radius: 4px; padding: 10px 12px; cursor: pointer; position: relative; box-shadow: 0 1px 2px rgba(9,30,66,.13); font-size: 13px; }
-.card.prio-high { border-left: 3px solid var(--high); }
-.card.prio-med { border-left: 3px solid var(--med); }
-.card.prio-low { border-left: 3px solid var(--low); }
-.card.upcoming { border: 2px solid var(--text); }
-.card.overdue { border: 2px solid #8b0000; }
+.card.prio-high { background: #d4edda; border-left: 3px solid #28a745; }
+.card.prio-med { background: #fff3cd; border-left: 3px solid #ffc107; }
+.card.prio-low { background: #f8d7da; border-left: 3px solid #dc3545; }
+.card.upcoming { outline: 2px solid #172b4d; outline-offset: -2px; }
+.card.overdue { outline: 2px solid #8b0000; outline-offset: -2px; }
 .card.completed { opacity: 0.75; position: relative; }
 .card.completed::after { content: "✓"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 90px; color: rgba(40,167,69,.65); font-weight: 900; pointer-events: none; }
 
