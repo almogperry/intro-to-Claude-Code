@@ -10,7 +10,8 @@ export function initDnD(boardEl) {
       group: 'tasks',
       animation: 150,
       ghostClass: 'ghost',
-      handle: '.title',
+      delay: 200,
+      delayOnTouchOnly: true,
       onEnd: async (evt) => {
         const cardEl = evt.item;
         const taskId = parseInt(cardEl.dataset.taskId);
