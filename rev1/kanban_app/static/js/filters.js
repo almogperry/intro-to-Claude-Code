@@ -34,14 +34,6 @@ export function applyFilters(tasks, filterState, columns, isOverdue, isUpcoming)
       if (!matchesDue) return false;
     }
 
-    // Completed filter (show/hide completed tasks)
-    if (filterState.hideCompleted) {
-      const col = columns.find(c => c.id === task.column_id);
-      if (col && col.is_terminal) {
-        return false;
-      }
-    }
-
     // Column filter (OR: match ANY selected)
     if (filterState.columns.length > 0) {
       if (!filterState.columns.includes(task.column_id)) {
@@ -58,7 +50,6 @@ export function getDefaultFilterState() {
     categories: [],     // empty = show all
     priorities: [],     // empty = show all
     dueDates: [],       // empty = show all (upcoming, overdue, nodue)
-    hideCompleted: false,
     columns: [],        // empty = show all
   };
 }
