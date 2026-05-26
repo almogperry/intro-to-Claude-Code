@@ -1,0 +1,39 @@
+:root {
+  --bg: #f4f5f7;
+  --col-bg: #ebecf0;
+  --card-bg: #fff;
+  --text: #172b4d;
+  --muted: #5e6c84;
+  --border: #dfe1e6;
+  --high: #28a745;
+  --med: #ffc107;
+  --low: #dc3545;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+
+header { padding: 12px 20px; background: #fff; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 16px; height: 54px; }
+header h1 { margin: 0; font-size: 16px; font-weight: 600; flex: 1; }
+header .btn { padding: 6px 12px; background: #0052cc; color: #fff; border: 0; border-radius: 4px; font-size: 13px; cursor: pointer; }
+
+.board { display: flex; gap: 12px; padding: 16px; overflow-x: auto; min-height: calc(100vh - 70px); }
+.column { background: var(--col-bg); border-radius: 6px; padding: 8px; width: 280px; flex-shrink: 0; display: flex; flex-direction: column; }
+.column-header { padding: 6px 8px 10px; font-weight: 600; font-size: 13px; display: flex; justify-content: space-between; }
+.column-header .count { color: var(--muted); font-weight: 400; }
+.cards { display: flex; flex-direction: column; gap: 8px; }
+.card { background: var(--card-bg); border-radius: 4px; padding: 10px 12px; cursor: pointer; position: relative; box-shadow: 0 1px 2px rgba(9,30,66,.13); font-size: 13px; }
+.card.prio-high { border-left: 3px solid var(--high); }
+.card.prio-med { border-left: 3px solid var(--med); }
+.card.prio-low { border-left: 3px solid var(--low); }
+.card.upcoming { outline: 2px solid var(--text); outline-offset: -2px; }
+.card.overdue { outline: 2px solid #8b0000; outline-offset: -2px; }
+.card.completed { opacity: 0.75; position: relative; }
+.card.completed::after { content: "✓"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 90px; color: rgba(40,167,69,.65); font-weight: 900; pointer-events: none; }
+
+.card .title { font-weight: 500; margin-bottom: 6px; }
+.card .meta { display: flex; gap: 8px; align-items: center; font-size: 11px; color: var(--muted); }
+.card .cat { padding: 1px 6px; border-radius: 8px; background: #ddd; }
+.card .due { font-variant-numeric: tabular-nums; }
+
+Rev01

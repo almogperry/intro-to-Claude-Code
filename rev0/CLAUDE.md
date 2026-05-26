@@ -1,0 +1,1 @@
+- In all interactions and comit messages, be extremely concise and in necessary sacrifice grammer for the sake of concision.

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"g:\\\\GIT\\\\intro-to-Claude-Code\" log --oneline -10)",
+      "PowerShell(python --version)",
+      "PowerShell(pip --version)",
+      "PowerShell(pip install -r rev0\\\\requirements.txt)"
+    ]
+  }
+}

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1024">
+    <title>Job Tracker</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header id="stats-bar">
+        <h1 class="brand">Job Tracker</h1>
+        <div class="stats">
+            <div class="stat"><span class="stat-num" id="stat-total">0</span><span class="stat-label">Total</span></div>
+            <div class="stat"><span class="stat-num" id="stat-pipeline">0</span><span class="stat-label">In Pipeline</span></div>
+            <div class="stat"><span class="stat-num" id="stat-offers">0</span><span class="stat-label">Offers</span></div>
+        </div>
+    </header>
+
+    <main id="board">
+        <section class="column" data-status="applied">
+            <div class="col-header"><span class="col-title">Applied</span><span class="col-count">0</span></div>
+            <div class="cards"></div>
+            <p class="empty-state">No applications yet.</p>
+        </section>
+        <section class="column" data-status="phone_screen">
+            <div class="col-header"><span class="col-title">Phone Screen</span><span class="col-count">0</span></div>
+            <div class="cards"></div>
+            <p class="empty-state">Drop applications here.</p>
+        </section>
+        <section class="column" data-status="interview">
+            <div class="col-header"><span class="col-title">Interview</span><span class="col-count">0</span></div>
+            <div class="cards"></div>
+            <p class="empty-state">Drop applications here.</p>
+        </section>
+        <section class="column" data-status="offer">
+            <div class="col-header"><span class="col-title">Offer</span><span class="col-count">0</span></div>
+            <div class="cards"></div>
+            <p class="empty-state">No offers yet.</p>
+        </section>
+        <section class="column" data-status="rejected">
+            <div class="col-header"><span class="col-title">Rejected</span><span class="col-count">0</span></div>
+            <div class="cards"></div>
+            <p class="empty-state">Nothing here. Keep going.</p>
+        </section>
+    </main>
+
+    <button id="add-btn" title="Add application">+</button>
+
+    <!-- Add application modal -->
+    <div id="modal" class="overlay hidden">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h2>New Application</h2>
+                <button class="close-btn" id="modal-close" title="Close">&times;</button>
+            </div>
+            <form id="add-form">
+                <label>Company <span class="req">*</span><input type="text" name="company" required></label>
+                <label>Role <span class="req">*</span><input type="text" name="role" required></label>
+                <label>Location<input type="text" name="location"></label>
+                <label>URL<input type="url" name="url"></label>
+                <label>Applied date<input type="date" name="applied_date"></label>
+                <label>Status
+                    <select name="status">
+                        <option value="applied">Applied</option>
+                        <option value="phone_screen">Phone Screen</option>
+                        <option value="interview">Interview</option>
+                        <option value="offer">Offer</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </label>
+                <div class="row">
+                    <label>Salary min<input type="number" name="salary_min" min="0"></label>
+                    <label>Salary max<input type="number" name="salary_max" min="0"></label>
+                </div>
+                <p id="modal-error" class="error-msg"></p>
+                <button type="submit" class="btn-primary" id="modal-submit">Create</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Detail drawer -->
+    <div id="drawer-overlay" class="overlay hidden"></div>
+    <aside id="drawer">
+        <div class="drawer-head">
+            <h2 id="drawer-title">Application</h2>
+            <button class="close-btn" id="drawer-close" title="Close">&times;</button>
+        </div>
+        <div id="drawer-content"><p class="skeleton-line"></p><p class="skeleton-line"></p><p class="skeleton-line"></p></div>
+    </aside>
+
+    <div id="toast" class="hidden"></div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
