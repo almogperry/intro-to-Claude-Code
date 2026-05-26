@@ -8,11 +8,12 @@ def list_cols():
 
 def create_col(name):
   conn = get_conn()
-  max_pos = conn.execute("SELECT MAX(position) FROM columns").fetchone()[0] or -1
+  c = conn.cursor()
+  max_pos = c.execute("SELECT MAX(position) FROM columns").fetchone()[0] or -1
   pos = max_pos + 1
-  conn.execute("INSERT INTO columns (name, position, is_terminal) VALUES (?, ?, 0)", (name, pos))
+  c.execute("INSERT INTO columns (name, position, is_terminal) VALUES (?, ?, 0)", (name, pos))
   conn.commit()
-  cid = conn.lastrowid
+  cid = c.lastrowid
   conn.close()
   return {'id': cid, 'name': name, 'position': pos, 'is_terminal': 0}
 

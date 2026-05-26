@@ -14,7 +14,7 @@ export function renderColumn(parent, col, allTasks, categories) {
   const cardsEl = parent.querySelector('.cards');
   tasks.forEach(t => {
     const cardEl = document.createElement('div');
-    renderCard(cardEl, t);
+    renderCard(cardEl, t, categories);
     cardsEl.appendChild(cardEl);
   });
 }

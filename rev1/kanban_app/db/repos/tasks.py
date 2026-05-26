@@ -15,15 +15,16 @@ def list_tasks():
 
 def create_task(title, category_id, column_id, priority="med", desc=None, scope=None, due_date=None, due_time=None):
   conn = get_conn()
-  max_pos = conn.execute("SELECT MAX(position) FROM tasks WHERE column_id = ?", (column_id,)).fetchone()[0] or -1
+  c = conn.cursor()
+  max_pos = c.execute("SELECT MAX(position) FROM tasks WHERE column_id = ?", (column_id,)).fetchone()[0] or -1
   pos = max_pos + 1
   now = datetime.utcnow().isoformat()
-  conn.execute(
+  c.execute(
     "INSERT INTO tasks (title, description, category_id, column_id, priority, scope, due_date, due_time, position, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     (title, desc, category_id, column_id, priority, scope, due_date, due_time, pos, now, now)
   )
   conn.commit()
-  tid = conn.lastrowid
+  tid = c.lastrowid
   conn.close()
   return {
     'id': tid, 'title': title, 'description': desc, 'category_id': category_id, 'column_id': column_id,

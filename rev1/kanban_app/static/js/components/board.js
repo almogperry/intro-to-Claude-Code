@@ -1,5 +1,6 @@
 import { getState, subscribe } from '../store.js';
 import { renderColumn } from './column.js';
+import { showTaskForm } from './task_form.js';
 
 export function renderBoard(parent) {
   parent.innerHTML = `
@@ -9,6 +10,12 @@ export function renderBoard(parent) {
     </header>
     <div class="board" id="board"></div>
   `;
+
+  const addBtn = document.getElementById('addTaskBtn');
+  addBtn.addEventListener('click', () => {
+    const state = getState();
+    showTaskForm(document.body, state.columns, state.categories);
+  });
 
   function render() {
     const state = getState();

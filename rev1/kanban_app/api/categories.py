@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 from db.repos.categories import list_cats, create_cat, delete_cat
 from api._schemas import CategoryOut
 from typing import List
@@ -10,7 +10,7 @@ def get_categories():
   return list_cats()
 
 @router.post("/categories", response_model=CategoryOut)
-def post_category(name: str):
+def post_category(name: str = Body(...)):
   return create_cat(name)
 
 @router.delete("/categories/{cat_id}")

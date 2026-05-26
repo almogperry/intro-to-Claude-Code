@@ -26,6 +26,7 @@ def post_task(task: TaskIn):
     due_date=task.due_date,
     due_time=task.due_time
   )
+  t['subtasks'] = []
   return TaskOut(**t)
 
 @router.patch("/tasks/{task_id}", response_model=TaskOut)
