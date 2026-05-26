@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional, List
 
 class ColumnOut(BaseModel):
@@ -58,3 +58,10 @@ class TaskUpdate(BaseModel):
   due_date: Optional[str] = None
   due_time: Optional[str] = None
   position: Optional[int] = None
+
+  @field_validator('description', 'scope', 'due_date', 'due_time', 'title', mode='before')
+  @classmethod
+  def empty_str_to_none(cls, v):
+    if v == '':
+      return None
+    return v
