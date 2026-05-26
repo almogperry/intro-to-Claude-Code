@@ -14,6 +14,6 @@ export function renderCard(parent, task, categories) {
   `;
   parent.addEventListener('click', (e) => {
     if (e.target.closest('.cards')) return; // ignore card container clicks
-    showCardExpanded(document.body, task.id);
+    showCardExpanded(document.body, task.id, parent);
   });
 }

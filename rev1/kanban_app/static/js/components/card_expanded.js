@@ -1,7 +1,8 @@
 import { updateTask, deleteTask, createSubtask } from '../api.js';
 import { setState, getState } from '../store.js';
+import { animateCardExpand, animateCardCollapse } from '../modal_anim.js';
 
-export function showCardExpanded(parent, taskId) {
+export function showCardExpanded(parent, taskId, sourceEl) {
   const state = getState();
   const task = state.tasks.find(t => t.id === taskId);
   if (!task) return;
@@ -10,10 +11,10 @@ export function showCardExpanded(parent, taskId) {
   const cols = state.columns;
 
   const modal = document.createElement('div');
-  modal.style.cssText = 'position:fixed;inset:0;z-index:1000';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:1000;pointer-events:auto';
   modal.innerHTML = `
-    <div style="position:absolute;inset:0;background:rgba(9,30,66,.4);animation:blurIn .15s" id="backdrop"></div>
-    <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;border-radius:8px;padding:24px;width:480px;max-height:80vh;box-shadow:0 8px 32px rgba(0,0,0,.25);overflow-y:auto;z-index:1001" id="card">
+    <div style="position:absolute;inset:0;background:rgba(9,30,66,.4);backdrop-filter:blur(6px)" id="backdrop"></div>
+    <div style="position:fixed;background:#fff;border-radius:8px;padding:24px;box-shadow:0 8px 32px rgba(0,0,0,.25);overflow-y:auto;z-index:1001;max-height:80vh" id="card">
       <button style="position:absolute;top:12px;right:12px;background:0;border:0;font-size:20px;cursor:pointer;color:#5e6c84" id="closeBtn">×</button>
       <input type="text" id="title" value="${task.title}" maxlength="200" style="width:100%;padding:8px;border:1px solid #dfe1e6;border-radius:4px;font-size:16px;font-weight:600;margin-bottom:12px">
       <textarea id="desc" placeholder="Add description..." style="width:100%;padding:8px;border:1px solid #dfe1e6;border-radius:4px;font-size:13px;min-height:60px;margin-bottom:12px;resize:vertical">${task.description || ''}</textarea>
@@ -69,6 +70,7 @@ export function showCardExpanded(parent, taskId) {
   `;
 
   parent.appendChild(modal);
+  animateCardExpand(sourceEl, modal);
 
   const closeBtn = document.getElementById('closeBtn');
   const backdrop = document.getElementById('backdrop');
@@ -78,8 +80,14 @@ export function showCardExpanded(parent, taskId) {
   const subCheckboxes = modal.querySelectorAll('input[data-sub-id]');
   const delSubBtns = modal.querySelectorAll('button[data-del-sub]');
 
-  closeBtn.addEventListener('click', () => modal.remove());
-  backdrop.addEventListener('click', () => modal.remove());
+  const close = async () => {
+    const card = modal.querySelector('#card');
+    await animateCardCollapse(card);
+    modal.remove();
+  };
+
+  closeBtn.addEventListener('click', close);
+  backdrop.addEventListener('click', close);
 
   saveBtn.addEventListener('click', async () => {
     const updates = {
@@ -98,7 +106,7 @@ export function showCardExpanded(parent, taskId) {
         ...s,
         tasks: s.tasks.map(t => t.id === taskId ? { ...t, ...updates } : t)
       }));
-      modal.remove();
+      await close();
     } catch (e) {
       alert('Save failed: ' + e.message);
     }
@@ -109,7 +117,7 @@ export function showCardExpanded(parent, taskId) {
     try {
       await deleteTask(taskId);
       setState(s => ({ ...s, tasks: s.tasks.filter(t => t.id !== taskId) }));
-      modal.remove();
+      await close();
     } catch (e) {
       alert('Delete failed: ' + e.message);
     }
