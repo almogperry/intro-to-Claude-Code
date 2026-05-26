@@ -30,3 +30,13 @@ export async function deleteTask(id) {
   const r = await fetch(`${API_BASE}/tasks/${id}`, { method: 'DELETE' });
   if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
 }
+
+export async function createSubtask(taskId, body) {
+  const r = await fetch(`${API_BASE}/tasks/${taskId}/subtasks`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ body }),
+  });
+  if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+  return r.json();
+}

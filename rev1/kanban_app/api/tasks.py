@@ -3,6 +3,7 @@ from db.repos.tasks import list_tasks, create_task, update_task, delete_task
 from db.repos.columns import list_cols
 from db.repos.categories import list_cats
 from api._schemas import StateOut, TaskIn, TaskOut
+from domain.tasks import calc_insert_position
 from typing import Optional
 
 router = APIRouter()
@@ -16,6 +17,10 @@ def get_state():
 
 @router.post("/tasks", response_model=TaskOut)
 def post_task(task: TaskIn):
+  all_tasks = list_tasks()
+  col_tasks = [t for t in all_tasks if t['column_id'] == task.column_id]
+  pos = calc_insert_position(col_tasks, task.priority, task.due_date)
+
   t = create_task(
     title=task.title,
     category_id=task.category_id,
@@ -26,6 +31,8 @@ def post_task(task: TaskIn):
     due_date=task.due_date,
     due_time=task.due_time
   )
+  update_task(t['id'], position=pos)
+  t['position'] = pos
   t['subtasks'] = []
   return TaskOut(**t)
 

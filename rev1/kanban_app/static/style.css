@@ -36,4 +36,6 @@ header .btn { padding: 6px 12px; background: #0052cc; color: #fff; border: 0; bo
 .card .cat { padding: 1px 6px; border-radius: 8px; background: #ddd; }
 .card .due { font-variant-numeric: tabular-nums; }
 
+.ghost { opacity: 0.5; background: #f0f0f0; }
+
 Rev01

@@ -1,6 +1,7 @@
 export function renderCard(parent, task, categories) {
   const cat = categories.find(c => c.id === task.category_id);
   parent.className = `card prio-${task.priority}`;
+  parent.dataset.taskId = task.id;
   parent.innerHTML = `
     <div class="title">${task.title}</div>
     <div class="meta">

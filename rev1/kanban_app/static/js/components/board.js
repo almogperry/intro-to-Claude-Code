@@ -1,6 +1,7 @@
 import { getState, subscribe } from '../store.js';
 import { renderColumn } from './column.js';
 import { showTaskForm } from './task_form.js';
+import { initDnD } from '../dnd.js';
 
 export function renderBoard(parent) {
   parent.innerHTML = `
@@ -26,6 +27,7 @@ export function renderBoard(parent) {
       renderColumn(colEl, col, state.tasks, state.categories);
       board.appendChild(colEl);
     });
+    initDnD(board);
   }
 
   render();
