@@ -57,7 +57,8 @@ export function renderFilterBar(parent, categories, columns, filterState, onFilt
   const categoryOptions = categories.map(c => ({ value: c.id.toString(), label: c.name }));
   const categoryDropdown = createCheckboxDropdown('Categories', categoryOptions, filterState.categories.map(c => c.toString()), () => {
     const selected = Array.from(categoryDropdown.menu.querySelectorAll('input:checked')).map(cb => parseInt(cb.value));
-    onFilterChange({ ...filterState, categories: selected });
+    const newCategories = selected.length === categoryOptions.length ? [] : selected;
+    onFilterChange({ ...filterState, categories: newCategories });
   });
   filterEl.querySelector('#categoryFilterContainer').appendChild(categoryDropdown.container);
 
@@ -69,7 +70,8 @@ export function renderFilterBar(parent, categories, columns, filterState, onFilt
   ];
   const priorityDropdown = createCheckboxDropdown('Priority', priorityOptions, filterState.priorities, () => {
     const selected = Array.from(priorityDropdown.menu.querySelectorAll('input:checked')).map(cb => cb.value);
-    onFilterChange({ ...filterState, priorities: selected });
+    const newPriorities = selected.length === priorityOptions.length ? [] : selected;
+    onFilterChange({ ...filterState, priorities: newPriorities });
   });
   filterEl.querySelector('#priorityFilterContainer').appendChild(priorityDropdown.container);
 
@@ -82,7 +84,8 @@ export function renderFilterBar(parent, categories, columns, filterState, onFilt
   ];
   const dueDropdown = createCheckboxDropdown('Due', dueOptions, filterState.dueDates, () => {
     const selected = Array.from(dueDropdown.menu.querySelectorAll('input:checked')).map(cb => cb.value);
-    onFilterChange({ ...filterState, dueDates: selected });
+    const newDueDates = selected.length === dueOptions.length ? [] : selected;
+    onFilterChange({ ...filterState, dueDates: newDueDates });
   });
   filterEl.querySelector('#dueFilterContainer').appendChild(dueDropdown.container);
 
