@@ -53,6 +53,15 @@ export function renderFilterBar(parent, categories, columns, filterState, onFilt
 
   parent.appendChild(filterEl);
 
+  // Helper to toggle menu (closes others, allows toggle of same)
+  const toggleMenu = (menuKey, isOpen) => {
+    const newOpenMenus = {};
+    if (isOpen) {
+      newOpenMenus[menuKey] = true;
+    }
+    onFilterChange({ ...filterState, openMenus: newOpenMenus });
+  };
+
   // Category dropdown
   const categoryOptions = categories.map(c => ({ value: c.id.toString(), label: c.name }));
   const categoryDropdown = createCheckboxDropdown('Categories', categoryOptions, filterState.categories.map(c => c.toString()), () => {
@@ -60,7 +69,7 @@ export function renderFilterBar(parent, categories, columns, filterState, onFilt
     const newCategories = selected.length === categoryOptions.length ? [] : selected;
     onFilterChange({ ...filterState, categories: newCategories });
   }, filterState.openMenus?.category, (isOpen) => {
-    onFilterChange({ ...filterState, openMenus: { ...filterState.openMenus, category: isOpen } });
+    toggleMenu('category', isOpen);
   });
   filterEl.querySelector('#categoryFilterContainer').appendChild(categoryDropdown.container);
 
@@ -75,7 +84,7 @@ export function renderFilterBar(parent, categories, columns, filterState, onFilt
     const newPriorities = selected.length === priorityOptions.length ? [] : selected;
     onFilterChange({ ...filterState, priorities: newPriorities });
   }, filterState.openMenus?.priority, (isOpen) => {
-    onFilterChange({ ...filterState, openMenus: { ...filterState.openMenus, priority: isOpen } });
+    toggleMenu('priority', isOpen);
   });
   filterEl.querySelector('#priorityFilterContainer').appendChild(priorityDropdown.container);
 
@@ -91,7 +100,7 @@ export function renderFilterBar(parent, categories, columns, filterState, onFilt
     const newDueDates = selected.length === dueOptions.length ? [] : selected;
     onFilterChange({ ...filterState, dueDates: newDueDates });
   }, filterState.openMenus?.due, (isOpen) => {
-    onFilterChange({ ...filterState, openMenus: { ...filterState.openMenus, due: isOpen } });
+    toggleMenu('due', isOpen);
   });
   filterEl.querySelector('#dueFilterContainer').appendChild(dueDropdown.container);
 
