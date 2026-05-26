@@ -22,13 +22,6 @@ export function applyFilters(tasks, filterState, columns, getDueStatus) {
       }
     }
 
-    // Column filter (OR: match ANY selected)
-    if (filterState.columns.length > 0) {
-      if (!filterState.columns.includes(task.column_id)) {
-        return false;
-      }
-    }
-
     return true;
   });
 }
@@ -38,6 +31,5 @@ export function getDefaultFilterState() {
     categories: [],     // empty = show all
     priorities: [],     // empty = show all
     dueDates: [],       // empty = show all (scheduled, due, overdue, noDeadline)
-    columns: [],        // empty = show all
   };
 }

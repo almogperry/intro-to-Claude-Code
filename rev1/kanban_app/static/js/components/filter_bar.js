@@ -48,7 +48,6 @@ export function renderFilterBar(parent, categories, columns, filterState, onFilt
     <div id="categoryFilterContainer"></div>
     <div id="priorityFilterContainer"></div>
     <div id="dueFilterContainer"></div>
-    <div id="columnFilterContainer"></div>
     <button id="clearFilters" style="padding:6px 12px;background:#dfe1e6;border:0;border-radius:4px;font-size:12px;cursor:pointer;margin-left:auto">Clear all</button>
   `;
 
@@ -87,20 +86,11 @@ export function renderFilterBar(parent, categories, columns, filterState, onFilt
   });
   filterEl.querySelector('#dueFilterContainer').appendChild(dueDropdown.container);
 
-  // Column dropdown
-  const columnOptions = columns.map(c => ({ value: c.id.toString(), label: c.name }));
-  const columnDropdown = createCheckboxDropdown('Columns', columnOptions, filterState.columns.map(c => c.toString()), () => {
-    const selected = Array.from(columnDropdown.menu.querySelectorAll('input:checked')).map(cb => parseInt(cb.value));
-    onFilterChange({ ...filterState, columns: selected });
-  });
-  filterEl.querySelector('#columnFilterContainer').appendChild(columnDropdown.container);
-
   filterEl.querySelector('#clearFilters').addEventListener('click', () => {
     onFilterChange({
       categories: [],
       priorities: [],
       dueDates: [],
-      columns: [],
     });
   });
 
