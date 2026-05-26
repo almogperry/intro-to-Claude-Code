@@ -77,8 +77,51 @@ export function showCardExpanded(parent, taskId, sourceEl) {
   const delBtn = document.getElementById('delBtn');
   const saveBtn = document.getElementById('saveBtn');
   const addSubBtn = document.getElementById('addSubBtn');
-  const subCheckboxes = modal.querySelectorAll('input[data-sub-id]');
-  const delSubBtns = modal.querySelectorAll('button[data-del-sub]');
+  const subsContainer = document.getElementById('subs');
+
+  const attachSubListeners = (checkbox, deleteBtn) => {
+    checkbox.addEventListener('change', async (e) => {
+      const subId = parseInt(e.target.dataset.subId);
+      try {
+        await updateSubtask(subId, { checked: e.target.checked ? 1 : 0 });
+        setState(s => ({
+          ...s,
+          tasks: s.tasks.map(t =>
+            t.id === taskId
+              ? { ...t, subtasks: t.subtasks.map(sb => sb.id === subId ? { ...sb, checked: e.target.checked ? 1 : 0 } : sb) }
+              : t
+          )
+        }));
+      } catch (e) {
+        console.error('subtask toggle failed:', e);
+        e.target.checked = !e.target.checked;
+      }
+    });
+
+    deleteBtn.addEventListener('click', async (e) => {
+      const subId = parseInt(e.target.dataset.delSub);
+      try {
+        await deleteSubtask(subId);
+        setState(s => ({
+          ...s,
+          tasks: s.tasks.map(t =>
+            t.id === taskId
+              ? { ...t, subtasks: t.subtasks.filter(sb => sb.id !== subId) }
+              : t
+          )
+        }));
+        e.target.closest('div').remove();
+      } catch (e) {
+        alert('Delete subtask failed: ' + e.message);
+      }
+    });
+  };
+
+  // Attach listeners to initial subtasks
+  modal.querySelectorAll('input[data-sub-id]').forEach(cb => {
+    const btn = cb.parentElement.querySelector('button[data-del-sub]');
+    attachSubListeners(cb, btn);
+  });
 
   const close = async () => {
     const card = modal.querySelector('#card');
@@ -123,52 +166,11 @@ export function showCardExpanded(parent, taskId, sourceEl) {
     }
   });
 
-  subCheckboxes.forEach(cb => {
-    cb.addEventListener('change', async (e) => {
-      const subId = parseInt(e.target.dataset.subId);
-      try {
-        await updateSubtask(subId, { checked: e.target.checked ? 1 : 0 });
-        setState(s => ({
-          ...s,
-          tasks: s.tasks.map(t =>
-            t.id === taskId
-              ? { ...t, subtasks: t.subtasks.map(sb => sb.id === subId ? { ...sb, checked: e.target.checked ? 1 : 0 } : sb) }
-              : t
-          )
-        }));
-      } catch (e) {
-        console.error('subtask toggle failed:', e);
-        e.target.checked = !e.target.checked;
-      }
-    });
-  });
-
-  delSubBtns.forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      const subId = parseInt(e.target.dataset.delSub);
-      try {
-        await deleteSubtask(subId);
-        setState(s => ({
-          ...s,
-          tasks: s.tasks.map(t =>
-            t.id === taskId
-              ? { ...t, subtasks: t.subtasks.filter(sb => sb.id !== subId) }
-              : t
-          )
-        }));
-        e.target.closest('div').remove();
-      } catch (e) {
-        alert('Delete subtask failed: ' + e.message);
-      }
-    });
-  });
-
   addSubBtn.addEventListener('click', async () => {
     const bodyInput = document.getElementById('newSubBody');
     const body = bodyInput.value.trim();
     if (!body) return;
 
-    const subsContainer = document.getElementById('subs');
     const tempId = Math.random();
     const subEl = document.createElement('div');
     subEl.style.cssText = 'display:flex;gap:8px;align-items:center';
@@ -180,6 +182,10 @@ export function showCardExpanded(parent, taskId, sourceEl) {
     subsContainer.appendChild(subEl);
     bodyInput.value = '';
 
+    const checkbox = subEl.querySelector(`[data-sub-id="${tempId}"]`);
+    const delBtn = subEl.querySelector(`[data-del-sub="${tempId}"]`);
+    attachSubListeners(checkbox, delBtn);
+
     try {
       const sub = await createSubtask(taskId, body);
       setState(s => ({
@@ -190,8 +196,8 @@ export function showCardExpanded(parent, taskId, sourceEl) {
             : t
         )
       }));
-      subEl.querySelector(`[data-sub-id="${tempId}"]`).dataset.subId = sub.id;
-      subEl.querySelector(`[data-del-sub="${tempId}"]`).dataset.delSub = sub.id;
+      checkbox.dataset.subId = sub.id;
+      delBtn.dataset.delSub = sub.id;
     } catch (e) {
       alert('Add subtask failed: ' + e.message);
       subEl.remove();
