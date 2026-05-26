@@ -45,7 +45,7 @@ export function renderFilterBar(parent, categories, columns, filterState, onFilt
 
   filterEl.innerHTML = `
     <span style="font-size:12px;color:#5e6c84;font-weight:600">FILTERS:</span>
-    <div style="display:flex;gap:6px;flex-wrap:wrap" id="categoryChips"></div>
+    <div id="categoryFilterContainer"></div>
     <div id="priorityFilterContainer"></div>
     <div id="dueFilterContainer"></div>
     <div id="columnFilterContainer"></div>
@@ -54,26 +54,13 @@ export function renderFilterBar(parent, categories, columns, filterState, onFilt
 
   parent.appendChild(filterEl);
 
-  // Render category chips
-  const chipsEl = filterEl.querySelector('#categoryChips');
-  categories.forEach(cat => {
-    const chip = document.createElement('button');
-    chip.style.cssText = `
-      padding:6px 10px;border-radius:16px;border:1px solid #dfe1e6;
-      background:${filterState.categories.includes(cat.id) ? '#0052cc' : '#fff'};
-      color:${filterState.categories.includes(cat.id) ? '#fff' : '#172b4d'};
-      font-size:12px;cursor:pointer;
-      ${filterState.categories.includes(cat.id) ? 'border-color:#0052cc' : ''}
-    `;
-    chip.textContent = cat.name;
-    chip.addEventListener('click', () => {
-      const newCategories = filterState.categories.includes(cat.id)
-        ? filterState.categories.filter(id => id !== cat.id)
-        : [...filterState.categories, cat.id];
-      onFilterChange({ ...filterState, categories: newCategories });
-    });
-    chipsEl.appendChild(chip);
+  // Category dropdown
+  const categoryOptions = categories.map(c => ({ value: c.id.toString(), label: c.name }));
+  const categoryDropdown = createCheckboxDropdown('Categories', categoryOptions, filterState.categories.map(c => c.toString()), () => {
+    const selected = Array.from(categoryDropdown.menu.querySelectorAll('input:checked')).map(cb => parseInt(cb.value));
+    onFilterChange({ ...filterState, categories: selected });
   });
+  filterEl.querySelector('#categoryFilterContainer').appendChild(categoryDropdown.container);
 
   // Priority dropdown
   const priorityOptions = [
