@@ -164,8 +164,22 @@ export function showCardExpanded(parent, taskId, sourceEl) {
   });
 
   addSubBtn.addEventListener('click', async () => {
-    const body = document.getElementById('newSubBody').value.trim();
+    const bodyInput = document.getElementById('newSubBody');
+    const body = bodyInput.value.trim();
     if (!body) return;
+
+    const subsContainer = document.getElementById('subs');
+    const tempId = Math.random();
+    const subEl = document.createElement('div');
+    subEl.style.cssText = 'display:flex;gap:8px;align-items:center';
+    subEl.innerHTML = `
+      <input type="checkbox" data-sub-id="${tempId}" style="cursor:pointer">
+      <span>${body}</span>
+      <button data-del-sub="${tempId}" style="margin-left:auto;background:0;border:0;color:#dc3545;cursor:pointer;font-size:12px">del</button>
+    `;
+    subsContainer.appendChild(subEl);
+    bodyInput.value = '';
+
     try {
       const sub = await createSubtask(taskId, body);
       setState(s => ({
@@ -176,9 +190,11 @@ export function showCardExpanded(parent, taskId, sourceEl) {
             : t
         )
       }));
-      document.getElementById('newSubBody').value = '';
+      subEl.querySelector(`[data-sub-id="${tempId}"]`).dataset.subId = sub.id;
+      subEl.querySelector(`[data-del-sub="${tempId}"]`).dataset.delSub = sub.id;
     } catch (e) {
       alert('Add subtask failed: ' + e.message);
+      subEl.remove();
     }
   });
 }
