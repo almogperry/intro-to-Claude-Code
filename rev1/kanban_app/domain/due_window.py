@@ -1,24 +1,39 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
-def is_upcoming(due_date, due_time=None):
-  """Task is upcoming if due_date is in the future and within reasonable window."""
-  if not due_date:
-    return False
+def get_window_start(due_date, scope):
+  """Calculate window start based on scope (3h/3d/1w/3mo before due)."""
   try:
-    task_due = datetime.strptime(due_date, '%Y-%m-%d')
-    now = datetime.now()
-    # Upcoming: future date, but not overdue
-    return task_due.date() > now.date()
+    task_due = datetime.strptime(due_date, '%Y-%m-%d').date()
+    if scope == 'day':
+      return task_due - timedelta(hours=3)
+    elif scope == 'week':
+      return task_due - timedelta(days=3)
+    elif scope == 'month':
+      return task_due - timedelta(days=7)
+    elif scope == 'year':
+      return task_due - timedelta(days=90)
   except:
-    return False
+    pass
+  return task_due
 
-def is_overdue(due_date, due_time=None):
-  """Task is overdue if due_date is in the past."""
+def get_due_status(due_date, scope=None):
+  """Classify task: noDeadline, upcoming, due, or overdue."""
   if not due_date:
-    return False
+    return 'noDeadline'
   try:
-    task_due = datetime.strptime(due_date, '%Y-%m-%d')
-    now = datetime.now()
-    return task_due.date() < now.date()
+    task_due = datetime.strptime(due_date, '%Y-%m-%d').date()
+    today = datetime.now().date()
+
+    if task_due < today:
+      return 'overdue'
+    elif task_due == today:
+      return 'due'
+
+    if scope:
+      window_start = get_window_start(due_date, scope)
+      if today >= window_start:
+        return 'upcoming'
+
+    return 'noDeadline'
   except:
-    return False
+    return 'noDeadline'

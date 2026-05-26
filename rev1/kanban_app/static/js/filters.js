@@ -1,4 +1,4 @@
-export function applyFilters(tasks, filterState, columns, isOverdue, isUpcoming) {
+export function applyFilters(tasks, filterState, columns, getDueStatus) {
   return tasks.filter(task => {
     // Category filter (OR: match ANY selected)
     if (filterState.categories.length > 0) {
@@ -16,22 +16,10 @@ export function applyFilters(tasks, filterState, columns, isOverdue, isUpcoming)
 
     // Due-date filter (OR: match ANY selected option)
     if (filterState.dueDates.length > 0) {
-      let matchesDue = false;
-      for (const dueOption of filterState.dueDates) {
-        if (dueOption === 'upcoming' && isUpcoming(task.due_date)) {
-          matchesDue = true;
-          break;
-        }
-        if (dueOption === 'overdue' && isOverdue(task.due_date)) {
-          matchesDue = true;
-          break;
-        }
-        if (dueOption === 'nodue' && !task.due_date) {
-          matchesDue = true;
-          break;
-        }
+      const taskStatus = getDueStatus(task.due_date, task.scope);
+      if (!filterState.dueDates.includes(taskStatus)) {
+        return false;
       }
-      if (!matchesDue) return false;
     }
 
     // Column filter (OR: match ANY selected)

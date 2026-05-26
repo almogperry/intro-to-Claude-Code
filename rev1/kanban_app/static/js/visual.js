@@ -1,20 +1,21 @@
 import { getState } from './store.js';
-import { isOverdue, isUpcoming } from './due_window.js';
+import { getDueStatus } from './due_window.js';
 
 export function getCardClasses(task) {
   const classes = [`prio-${task.priority}`];
   const state = getState();
   const col = state.columns.find(c => c.id === task.column_id);
 
-  // Check if task is in terminal column (completed)
   if (col && col.is_terminal) {
     classes.push('completed');
   }
 
-  // Check if task is upcoming or overdue
-  if (isOverdue(task.due_date)) {
+  const dueStatus = getDueStatus(task.due_date, task.scope);
+  if (dueStatus === 'overdue') {
     classes.push('overdue');
-  } else if (isUpcoming(task.due_date)) {
+  } else if (dueStatus === 'due') {
+    classes.push('due');
+  } else if (dueStatus === 'upcoming') {
     classes.push('upcoming');
   }
 

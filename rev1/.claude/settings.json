@@ -31,7 +31,13 @@
       "Bash(curl -s -X PATCH http://127.0.0.1:8000/api/tasks/3 -H 'Content-Type: application/json' -d '{\"scope\":\"day\",\"due_date\":\"\"}')",
       "Bash(find g:/GIT/intro-to-Claude-Code -name \"index.html\" -o -name \"*prototype*\" 2>/dev/null | head -10)",
       "Read(//g/GIT/intro-to-Claude-Code/**)",
-      "Bash(python -c \"import sys, json; print\\('Ready'\\)\")"
+      "Bash(python -c \"import sys, json; print\\('Ready'\\)\")",
+      "Bash(git -C \"g:\\\\GIT\\\\intro-to-Claude-Code\\\\rev1\" status)",
+      "Bash(git -C \"g:\\\\GIT\\\\intro-to-Claude-Code\\\\rev1\" add kanban_app/static/js/components/filter_bar.js)",
+      "Bash(git -C 'g:\\\\GIT\\\\intro-to-Claude-Code\\\\rev1' commit -m ' *)",
+      "Bash(python -m kanban_app.server)",
+      "Bash(curl -s http://localhost:8000)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue })"
     ]
   }
 }

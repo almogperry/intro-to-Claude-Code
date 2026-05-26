@@ -4,7 +4,7 @@ import { renderFilterBar } from './filter_bar.js';
 import { showTaskForm } from './task_form.js';
 import { initDnD } from '../dnd.js';
 import { applyFilters, getDefaultFilterState } from '../filters.js';
-import { isOverdue, isUpcoming } from '../due_window.js';
+import { getDueStatus } from '../due_window.js';
 
 export function renderBoard(parent) {
   parent.innerHTML = `
@@ -40,7 +40,7 @@ export function renderBoard(parent) {
     });
 
     // Apply filters
-    const filteredTasks = applyFilters(state.tasks, filterState, state.columns, isOverdue, isUpcoming);
+    const filteredTasks = applyFilters(state.tasks, filterState, state.columns, getDueStatus);
 
     // Render board with filtered tasks
     const board = document.getElementById('board');
