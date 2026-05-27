@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException, Body
+from fastapi import APIRouter, HTTPException, Body, Query
 from ..db.repos.columns import list_cols, create_col, update_col, delete_col
+from ..domain.columns import delete_column_with_disposition
 from ._schemas import ColumnOut
 from typing import List
 
@@ -24,6 +25,11 @@ def patch_column(col_id: int, name: str = None, position: int = None, is_termina
   return found[0] if found else None
 
 @router.delete("/columns/{col_id}")
-def del_column(col_id: int):
-  delete_col(col_id)
+def del_column(col_id: int, disposition: str = Query("delete")):
+  if disposition == "delete":
+    delete_column_with_disposition(col_id, "delete")
+  elif disposition.startswith("move:"):
+    delete_column_with_disposition(col_id, disposition)
+  else:
+    raise HTTPException(status_code=400, detail="invalid disposition")
   return {"ok": True}

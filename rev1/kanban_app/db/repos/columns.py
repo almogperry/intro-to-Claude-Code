@@ -1,5 +1,11 @@
 from ..connection import get_conn
 
+def get_col(col_id):
+  conn = get_conn()
+  row = conn.execute("SELECT * FROM columns WHERE id = ?", (col_id,)).fetchone()
+  conn.close()
+  return dict(row) if row else None
+
 def list_cols():
   conn = get_conn()
   rows = conn.execute("SELECT * FROM columns ORDER BY position").fetchall()
