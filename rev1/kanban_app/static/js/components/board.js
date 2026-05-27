@@ -2,6 +2,7 @@ import { getState, subscribe, setState } from '../store.js';
 import { renderColumn } from './column.js';
 import { renderFilterBar } from './filter_bar.js';
 import { showTaskForm } from './task_form.js';
+import { showSettingsDrawer } from './settings_drawer.js';
 import { initDnD } from '../dnd.js';
 import { applyFilters, getDefaultFilterState } from '../filters.js';
 import { getDueStatus } from '../due_window.js';
@@ -10,11 +11,26 @@ export function renderBoard(parent) {
   parent.innerHTML = `
     <header>
       <h1>Kanban</h1>
-      <button class="btn" id="addTaskBtn">+ New Task</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn" id="settingsBtn">⚙ Settings</button>
+        <button class="btn" id="addTaskBtn">+ New Task</button>
+      </div>
     </header>
     <div id="filterBarContainer"></div>
     <div class="board" id="board"></div>
   `;
+
+  const settingsBtn = document.getElementById('settingsBtn');
+  settingsBtn.addEventListener('click', () => {
+    let { backdrop, drawer } = showSettingsDrawer(
+      () => {
+        document.body.removeChild(backdrop);
+        document.body.removeChild(drawer);
+      },
+      () => render(),
+      () => render()
+    );
+  });
 
   const addBtn = document.getElementById('addTaskBtn');
   addBtn.addEventListener('click', () => {
