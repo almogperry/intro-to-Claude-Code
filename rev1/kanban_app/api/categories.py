@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Query, HTTPException, Body
+from fastapi import APIRouter, Query, HTTPException, Request
 from ..db.repos.categories import list_cats, create_cat, delete_cat, update_cat
 from ..domain.categories import delete_category_with_disposition
-from ._schemas import CategoryOut, CategoryCreate, CategoryUpdate
+from ._schemas import CategoryOut, CategoryCreate
 from typing import List
 
 router = APIRouter()
@@ -15,10 +15,11 @@ def post_category(cat: CategoryCreate):
   return create_cat(cat.name)
 
 @router.patch("/categories/{cat_id}", response_model=CategoryOut)
-def patch_category(cat_id: int, cat: CategoryUpdate = Body(embed=False)):
+async def patch_category(cat_id: int, request: Request):
+  data = await request.json()
   kw = {}
-  if cat.name is not None:
-    kw['name'] = cat.name
+  if 'name' in data and data['name'] is not None:
+    kw['name'] = data['name']
   if not kw:
     raise HTTPException(status_code=400, detail="no fields to update")
   update_cat(cat_id, **kw)
