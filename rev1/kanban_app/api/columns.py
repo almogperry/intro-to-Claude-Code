@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Body, Query
 from ..db.repos.columns import list_cols, create_col, update_col, delete_col
 from ..domain.columns import delete_column_with_disposition
-from ._schemas import ColumnOut, ColumnCreate
+from ._schemas import ColumnOut, ColumnCreate, ColumnUpdate
 from typing import List
 
 router = APIRouter()
@@ -15,8 +15,8 @@ def post_column(col: ColumnCreate):
   return create_col(col.name)
 
 @router.patch("/columns/{col_id}", response_model=ColumnOut)
-def patch_column(col_id: int, name: str = None, position: int = None, is_terminal: int = None):
-  kw = {k: v for k, v in [('name', name), ('position', position), ('is_terminal', is_terminal)] if v is not None}
+def patch_column(col_id: int, col: ColumnUpdate):
+  kw = col.model_dump(exclude_unset=True)
   if not kw:
     raise HTTPException(status_code=400, detail="no fields to update")
   update_col(col_id, **kw)

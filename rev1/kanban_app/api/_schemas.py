@@ -4,6 +4,11 @@ from typing import Optional, List
 class ColumnCreate(BaseModel):
   name: str
 
+class ColumnUpdate(BaseModel):
+  name: Optional[str] = None
+  position: Optional[int] = None
+  is_terminal: Optional[int] = None
+
 class ColumnOut(BaseModel):
   id: int
   name: str
@@ -12,6 +17,9 @@ class ColumnOut(BaseModel):
 
 class CategoryCreate(BaseModel):
   name: str
+
+class CategoryUpdate(BaseModel):
+  name: Optional[str] = None
 
 class CategoryOut(BaseModel):
   id: int
