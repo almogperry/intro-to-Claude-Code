@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Body
 from ..db.repos.columns import list_cols, create_col, update_col, delete_col
 from ..domain.columns import delete_column_with_disposition
 from ._schemas import ColumnOut, ColumnCreate, ColumnUpdate
@@ -15,7 +15,7 @@ def post_column(col: ColumnCreate):
   return create_col(col.name)
 
 @router.patch("/columns/{col_id}", response_model=ColumnOut)
-def patch_column(col_id: int, col: ColumnUpdate):
+def patch_column(col_id: int, col: ColumnUpdate = Body(embed=False)):
   kw = {}
   if col.name is not None:
     kw['name'] = col.name
