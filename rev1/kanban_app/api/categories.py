@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Body, Query, HTTPException
 from ..db.repos.categories import list_cats, create_cat, delete_cat, update_cat
 from ..domain.categories import delete_category_with_disposition
-from ._schemas import CategoryOut
+from ._schemas import CategoryOut, CategoryCreate
 from typing import List
 
 router = APIRouter()
@@ -11,8 +11,8 @@ def get_categories():
   return list_cats()
 
 @router.post("/categories", response_model=CategoryOut)
-def post_category(name: str = Body(...)):
-  return create_cat(name)
+def post_category(cat: CategoryCreate):
+  return create_cat(cat.name)
 
 @router.patch("/categories/{cat_id}", response_model=CategoryOut)
 def patch_category(cat_id: int, name: str = None):

@@ -1,11 +1,17 @@
 from pydantic import BaseModel, field_validator
 from typing import Optional, List
 
+class ColumnCreate(BaseModel):
+  name: str
+
 class ColumnOut(BaseModel):
   id: int
   name: str
   position: int
   is_terminal: int
+
+class CategoryCreate(BaseModel):
+  name: str
 
 class CategoryOut(BaseModel):
   id: int

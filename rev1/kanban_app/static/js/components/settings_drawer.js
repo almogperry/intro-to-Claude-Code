@@ -26,7 +26,18 @@ export function showSettingsDrawer(onClose, onColumnsChange, onCategoriesChange)
   // Columns section
   const columnsSection = document.createElement('div');
   columnsSection.style.cssText = 'padding:16px;border-bottom:1px solid #dfe1e6';
-  columnsSection.innerHTML = '<h3 style="margin:0 0 12px 0;font-size:13px;font-weight:600;color:#5e6c84">COLUMNS</h3>';
+
+  const columnsHeader = document.createElement('div');
+  columnsHeader.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:12px';
+  columnsHeader.innerHTML = '<h3 style="margin:0;font-size:13px;font-weight:600;color:#5e6c84">COLUMNS</h3>';
+
+  const addColBtn = document.createElement('button');
+  addColBtn.textContent = '+ Add';
+  addColBtn.style.cssText = 'padding:4px 8px;font-size:11px;border:1px solid #0052cc;color:#0052cc;border-radius:3px;cursor:pointer;background:#fff';
+  addColBtn.addEventListener('click', () => showCreateColumnForm(onColumnsChange));
+  columnsHeader.appendChild(addColBtn);
+
+  columnsSection.appendChild(columnsHeader);
 
   const state = getState();
   state.columns.forEach(col => {
@@ -80,7 +91,18 @@ export function showSettingsDrawer(onClose, onColumnsChange, onCategoriesChange)
   // Categories section
   const categoriesSection = document.createElement('div');
   categoriesSection.style.cssText = 'padding:16px';
-  categoriesSection.innerHTML = '<h3 style="margin:0 0 12px 0;font-size:13px;font-weight:600;color:#5e6c84">CATEGORIES</h3>';
+
+  const categoriesHeader = document.createElement('div');
+  categoriesHeader.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:12px';
+  categoriesHeader.innerHTML = '<h3 style="margin:0;font-size:13px;font-weight:600;color:#5e6c84">CATEGORIES</h3>';
+
+  const addCatBtn = document.createElement('button');
+  addCatBtn.textContent = '+ Add';
+  addCatBtn.style.cssText = 'padding:4px 8px;font-size:11px;border:1px solid #0052cc;color:#0052cc;border-radius:3px;cursor:pointer;background:#fff';
+  addCatBtn.addEventListener('click', () => showCreateCategoryForm(onCategoriesChange));
+  categoriesHeader.appendChild(addCatBtn);
+
+  categoriesSection.appendChild(categoriesHeader);
 
   state.categories.forEach(cat => {
     const item = document.createElement('div');
@@ -256,4 +278,112 @@ async function deleteColumnDirect(columnId, onSave) {
 async function deleteCategoryDirect(categoryId, onSave) {
   const resp = await fetch(`/api/categories/${categoryId}?disposition=delete`, { method: 'DELETE' });
   if (resp.ok) onSave();
+}
+
+function showCreateColumnForm(onSave) {
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:60';
+
+  const form = document.createElement('div');
+  form.style.cssText = 'background:#fff;padding:20px;border-radius:6px;min-width:300px;box-shadow:0 4px 12px rgba(0,0,0,0.15)';
+  form.innerHTML = `<h3 style="margin:0 0 16px 0">Add Column</h3>`;
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = 'Column name';
+  input.style.cssText = 'width:100%;padding:8px;border:1px solid #dfe1e6;border-radius:4px;font-size:13px;margin-bottom:16px';
+  input.maxLength = 100;
+
+  const btnGroup = document.createElement('div');
+  btnGroup.style.cssText = 'display:flex;gap:8px;justify-content:flex-end';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.style.cssText = 'padding:8px 12px;border:1px solid #dfe1e6;border-radius:4px;cursor:pointer;background:#fff';
+  cancelBtn.addEventListener('click', () => document.body.removeChild(modal));
+
+  const saveBtn = document.createElement('button');
+  saveBtn.textContent = 'Create';
+  saveBtn.style.cssText = 'padding:8px 12px;background:#0052cc;color:#fff;border:0;border-radius:4px;cursor:pointer';
+  saveBtn.addEventListener('click', async () => {
+    if (!input.value.trim()) {
+      alert('Column name is required');
+      return;
+    }
+    const resp = await fetch('/api/columns', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: input.value.trim() })
+    });
+    if (resp.ok) {
+      document.body.removeChild(modal);
+      onSave();
+    } else {
+      alert('Failed to create column');
+    }
+  });
+
+  btnGroup.appendChild(cancelBtn);
+  btnGroup.appendChild(saveBtn);
+
+  form.appendChild(input);
+  form.appendChild(btnGroup);
+  modal.appendChild(form);
+  document.body.appendChild(modal);
+
+  input.focus();
+}
+
+function showCreateCategoryForm(onSave) {
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:60';
+
+  const form = document.createElement('div');
+  form.style.cssText = 'background:#fff;padding:20px;border-radius:6px;min-width:300px;box-shadow:0 4px 12px rgba(0,0,0,0.15)';
+  form.innerHTML = `<h3 style="margin:0 0 16px 0">Add Category</h3>`;
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = 'Category name';
+  input.style.cssText = 'width:100%;padding:8px;border:1px solid #dfe1e6;border-radius:4px;font-size:13px;margin-bottom:16px';
+  input.maxLength = 100;
+
+  const btnGroup = document.createElement('div');
+  btnGroup.style.cssText = 'display:flex;gap:8px;justify-content:flex-end';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.style.cssText = 'padding:8px 12px;border:1px solid #dfe1e6;border-radius:4px;cursor:pointer;background:#fff';
+  cancelBtn.addEventListener('click', () => document.body.removeChild(modal));
+
+  const saveBtn = document.createElement('button');
+  saveBtn.textContent = 'Create';
+  saveBtn.style.cssText = 'padding:8px 12px;background:#0052cc;color:#fff;border:0;border-radius:4px;cursor:pointer';
+  saveBtn.addEventListener('click', async () => {
+    if (!input.value.trim()) {
+      alert('Category name is required');
+      return;
+    }
+    const resp = await fetch('/api/categories', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: input.value.trim() })
+    });
+    if (resp.ok) {
+      document.body.removeChild(modal);
+      onSave();
+    } else {
+      alert('Failed to create category');
+    }
+  });
+
+  btnGroup.appendChild(cancelBtn);
+  btnGroup.appendChild(saveBtn);
+
+  form.appendChild(input);
+  form.appendChild(btnGroup);
+  modal.appendChild(form);
+  document.body.appendChild(modal);
+
+  input.focus();
 }

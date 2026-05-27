@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Body, Query
 from ..db.repos.columns import list_cols, create_col, update_col, delete_col
 from ..domain.columns import delete_column_with_disposition
-from ._schemas import ColumnOut
+from ._schemas import ColumnOut, ColumnCreate
 from typing import List
 
 router = APIRouter()
@@ -11,8 +11,8 @@ def get_columns():
   return list_cols()
 
 @router.post("/columns", response_model=ColumnOut)
-def post_column(name: str = Body(...)):
-  return create_col(name)
+def post_column(col: ColumnCreate):
+  return create_col(col.name)
 
 @router.patch("/columns/{col_id}", response_model=ColumnOut)
 def patch_column(col_id: int, name: str = None, position: int = None, is_terminal: int = None):
