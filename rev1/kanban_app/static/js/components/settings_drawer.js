@@ -170,15 +170,25 @@ function showColumnEditForm(column, onSave) {
   saveBtn.textContent = 'Save';
   saveBtn.style.cssText = 'padding:8px 12px;background:#0052cc;color:#fff;border:0;border-radius:4px;cursor:pointer';
   saveBtn.addEventListener('click', async () => {
-    if (!input.value.trim()) return;
-    const resp = await fetch(`/api/columns/${column.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: input.value.trim() })
-    });
-    if (resp.ok) {
-      document.body.removeChild(modal);
-      onSave();
+    if (!input.value.trim()) {
+      alert('Column name cannot be empty');
+      return;
+    }
+    try {
+      const resp = await fetch(`/api/columns/${column.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: input.value.trim() })
+      });
+      const data = await resp.json();
+      if (resp.ok) {
+        document.body.removeChild(modal);
+        onSave();
+      } else {
+        alert(`Error: ${data.detail || 'Failed to update column'}`);
+      }
+    } catch (err) {
+      alert(`Error: ${err.message}`);
     }
   });
 
@@ -220,15 +230,25 @@ function showCategoryEditForm(category, onSave) {
   saveBtn.textContent = 'Save';
   saveBtn.style.cssText = 'padding:8px 12px;background:#0052cc;color:#fff;border:0;border-radius:4px;cursor:pointer';
   saveBtn.addEventListener('click', async () => {
-    if (!input.value.trim()) return;
-    const resp = await fetch(`/api/categories/${category.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: input.value.trim() })
-    });
-    if (resp.ok) {
-      document.body.removeChild(modal);
-      onSave();
+    if (!input.value.trim()) {
+      alert('Category name cannot be empty');
+      return;
+    }
+    try {
+      const resp = await fetch(`/api/categories/${category.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: input.value.trim() })
+      });
+      const data = await resp.json();
+      if (resp.ok) {
+        document.body.removeChild(modal);
+        onSave();
+      } else {
+        alert(`Error: ${data.detail || 'Failed to update category'}`);
+      }
+    } catch (err) {
+      alert(`Error: ${err.message}`);
     }
   });
 
