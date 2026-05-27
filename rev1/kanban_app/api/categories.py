@@ -15,7 +15,7 @@ def post_category(cat: CategoryCreate):
   return create_cat(cat.name)
 
 @router.patch("/categories/{cat_id}", response_model=CategoryOut)
-def patch_category(cat_id: int, cat: CategoryUpdate):
+def patch_category(cat_id: int, cat: CategoryUpdate = Body(...)):
   kw = cat.model_dump(exclude_unset=True)
   if not kw:
     raise HTTPException(status_code=400, detail="no fields to update")

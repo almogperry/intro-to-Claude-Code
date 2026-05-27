@@ -15,7 +15,7 @@ def post_column(col: ColumnCreate):
   return create_col(col.name)
 
 @router.patch("/columns/{col_id}", response_model=ColumnOut)
-def patch_column(col_id: int, col: ColumnUpdate):
+def patch_column(col_id: int, col: ColumnUpdate = Body(...)):
   kw = col.model_dump(exclude_unset=True)
   if not kw:
     raise HTTPException(status_code=400, detail="no fields to update")
