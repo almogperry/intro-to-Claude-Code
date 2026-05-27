@@ -16,16 +16,31 @@ def post_category(cat: CategoryCreate):
 
 @router.patch("/categories/{cat_id}", response_model=CategoryOut)
 async def patch_category(cat_id: int, request: Request):
-  data = await request.json()
+  print(f"[PATCH /categories/{cat_id}] Request received")
+  try:
+    data = await request.json()
+    print(f"[PATCH] Request body: {data}")
+  except Exception as e:
+    print(f"[PATCH] Error parsing JSON: {e}")
+    raise HTTPException(status_code=400, detail=f"Invalid JSON: {str(e)}")
+
   kw = {}
   if 'name' in data and data['name'] is not None:
     kw['name'] = data['name']
+    print(f"[PATCH] Will update name to: {data['name']}")
+
+  print(f"[PATCH] Update dict: {kw}")
   if not kw:
+    print("[PATCH] ERROR: No fields to update")
     raise HTTPException(status_code=400, detail="no fields to update")
+
+  print(f"[PATCH] Calling update_cat({cat_id}, {kw})")
   update_cat(cat_id, **kw)
   cats = list_cats()
   found = [c for c in cats if c['id'] == cat_id]
-  return found[0] if found else None
+  result = found[0] if found else None
+  print(f"[PATCH] Update complete, returning: {result}")
+  return result
 
 @router.delete("/categories/{cat_id}")
 def del_category(cat_id: int, disposition: str = Query("delete")):

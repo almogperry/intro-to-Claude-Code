@@ -175,19 +175,25 @@ function showColumnEditForm(column, onSave) {
       return;
     }
     try {
+      const payload = { name: input.value.trim() };
+      console.log('Sending PATCH to /api/columns/' + column.id, payload);
       const resp = await fetch(`/api/columns/${column.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: input.value.trim() })
+        body: JSON.stringify(payload)
       });
+      console.log('Response status:', resp.status, resp.statusText);
       const data = await resp.json();
+      console.log('Response data:', data);
       if (resp.ok) {
+        console.log('Update successful, closing modal and calling onSave');
         document.body.removeChild(modal);
         onSave();
       } else {
         alert(`Error: ${data.detail || 'Failed to update column'}`);
       }
     } catch (err) {
+      console.error('Fetch error:', err);
       alert(`Error: ${err.message}`);
     }
   });
@@ -235,19 +241,25 @@ function showCategoryEditForm(category, onSave) {
       return;
     }
     try {
+      const payload = { name: input.value.trim() };
+      console.log('Sending PATCH to /api/categories/' + category.id, payload);
       const resp = await fetch(`/api/categories/${category.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: input.value.trim() })
+        body: JSON.stringify(payload)
       });
+      console.log('Response status:', resp.status, resp.statusText);
       const data = await resp.json();
+      console.log('Response data:', data);
       if (resp.ok) {
+        console.log('Update successful, closing modal and calling onSave');
         document.body.removeChild(modal);
         onSave();
       } else {
         alert(`Error: ${data.detail || 'Failed to update category'}`);
       }
     } catch (err) {
+      console.error('Fetch error:', err);
       alert(`Error: ${err.message}`);
     }
   });
