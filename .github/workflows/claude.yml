@@ -1,0 +1,23 @@
+name: Claude AFK Implementation
+on:
+  issues:
+    types: [labeled]
+  issue_comment:
+    types: [created]   # keeps @claude mentions working too
+
+jobs:
+  implement:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write        # create branches, commit
+      pull-requests: write   # open the PR
+      issues: write          # comment progress on the issue
+    steps:
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          label_trigger: "claude-afk"
+          use_commit_signing: true
+          claude_args: |
+            --model claude-sonnet-4-6
+            --max-turns 40
