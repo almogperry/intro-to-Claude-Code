@@ -1,4 +1,4 @@
-import { getState } from '../store.js';
+import { getState, setState, subscribe } from '../store.js';
 import { showDeleteDisposition } from './delete_disposition.js';
 
 export function showSettingsDrawer(onClose, onColumnsChange, onCategoriesChange) {
@@ -23,120 +23,134 @@ export function showSettingsDrawer(onClose, onColumnsChange, onCategoriesChange)
   const content = document.createElement('div');
   content.style.cssText = 'flex:1;overflow-y:auto';
 
-  // Columns section
   const columnsSection = document.createElement('div');
   columnsSection.style.cssText = 'padding:16px;border-bottom:1px solid #dfe1e6';
 
-  const columnsHeader = document.createElement('div');
-  columnsHeader.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:12px';
-  columnsHeader.innerHTML = '<h3 style="margin:0;font-size:13px;font-weight:600;color:#5e6c84">COLUMNS</h3>';
-
-  const addColBtn = document.createElement('button');
-  addColBtn.textContent = '+ Add';
-  addColBtn.style.cssText = 'padding:4px 8px;font-size:11px;border:1px solid #0052cc;color:#0052cc;border-radius:3px;cursor:pointer;background:#fff';
-  addColBtn.addEventListener('click', () => showCreateColumnForm(onColumnsChange));
-  columnsHeader.appendChild(addColBtn);
-
-  columnsSection.appendChild(columnsHeader);
-
-  const state = getState();
-  state.columns.forEach(col => {
-    const item = document.createElement('div');
-    item.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:8px;margin-bottom:8px;background:#f4f5f7;border-radius:4px';
-
-    const nameSpan = document.createElement('span');
-    nameSpan.textContent = col.name;
-    nameSpan.style.cssText = 'flex:1;font-size:12px';
-    if (col.is_terminal) {
-      nameSpan.style.fontWeight = '600';
-      nameSpan.textContent += ' (terminal)';
-    }
-
-    const btnGroup = document.createElement('div');
-    btnGroup.style.cssText = 'display:flex;gap:4px';
-
-    const terminalBtn = document.createElement('button');
-    terminalBtn.textContent = col.is_terminal ? 'unset' : 'terminal';
-    terminalBtn.style.cssText = 'padding:4px 8px;font-size:11px;border:1px solid #dfe1e6;border-radius:3px;cursor:pointer;background:#fff';
-    terminalBtn.addEventListener('click', async () => {
-      const resp = await fetch(`/api/columns/${col.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_terminal: col.is_terminal ? 0 : 1 })
-      });
-      if (resp.ok) onColumnsChange();
-    });
-
-    const editBtn = document.createElement('button');
-    editBtn.textContent = 'edit';
-    editBtn.style.cssText = 'padding:4px 8px;font-size:11px;border:1px solid #dfe1e6;border-radius:3px;cursor:pointer;background:#fff';
-    editBtn.addEventListener('click', () => showColumnEditForm(col, onColumnsChange));
-
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'delete';
-    deleteBtn.style.cssText = 'padding:4px 8px;font-size:11px;border:1px solid #dc3545;color:#dc3545;border-radius:3px;cursor:pointer;background:#fff';
-    deleteBtn.addEventListener('click', () => deleteColumn(col, onColumnsChange));
-
-    btnGroup.appendChild(terminalBtn);
-    btnGroup.appendChild(editBtn);
-    btnGroup.appendChild(deleteBtn);
-
-    item.appendChild(nameSpan);
-    item.appendChild(btnGroup);
-    columnsSection.appendChild(item);
-  });
-
-  content.appendChild(columnsSection);
-
-  // Categories section
   const categoriesSection = document.createElement('div');
   categoriesSection.style.cssText = 'padding:16px';
 
-  const categoriesHeader = document.createElement('div');
-  categoriesHeader.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:12px';
-  categoriesHeader.innerHTML = '<h3 style="margin:0;font-size:13px;font-weight:600;color:#5e6c84">CATEGORIES</h3>';
+  function renderColumns() {
+    columnsSection.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h3 style="margin:0;font-size:13px;font-weight:600;color:#5e6c84">COLUMNS</h3></div>';
+    const columnsHeader = columnsSection.querySelector('div');
+    const addColBtn = document.createElement('button');
+    addColBtn.textContent = '+ Add';
+    addColBtn.style.cssText = 'padding:4px 8px;font-size:11px;border:1px solid #0052cc;color:#0052cc;border-radius:3px;cursor:pointer;background:#fff';
+    addColBtn.addEventListener('click', () => showCreateColumnForm(onClose));
+    columnsHeader.appendChild(addColBtn);
 
-  const addCatBtn = document.createElement('button');
-  addCatBtn.textContent = '+ Add';
-  addCatBtn.style.cssText = 'padding:4px 8px;font-size:11px;border:1px solid #0052cc;color:#0052cc;border-radius:3px;cursor:pointer;background:#fff';
-  addCatBtn.addEventListener('click', () => showCreateCategoryForm(onCategoriesChange));
-  categoriesHeader.appendChild(addCatBtn);
+    const state = getState();
+    state.columns.forEach(col => {
+      const item = document.createElement('div');
+      item.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:8px;margin-bottom:8px;background:#f4f5f7;border-radius:4px';
 
-  categoriesSection.appendChild(categoriesHeader);
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = col.name;
+      nameSpan.style.cssText = 'flex:1;font-size:12px';
+      if (col.is_terminal) {
+        nameSpan.style.fontWeight = '600';
+        nameSpan.textContent += ' (terminal)';
+      }
 
-  state.categories.forEach(cat => {
-    const item = document.createElement('div');
-    item.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:8px;margin-bottom:8px;background:#f4f5f7;border-radius:4px';
+      const btnGroup = document.createElement('div');
+      btnGroup.style.cssText = 'display:flex;gap:4px';
 
-    const nameSpan = document.createElement('span');
-    nameSpan.textContent = cat.name;
-    nameSpan.style.cssText = 'flex:1;font-size:12px';
+      const terminalBtn = document.createElement('button');
+      terminalBtn.textContent = col.is_terminal ? 'unset' : 'terminal';
+      terminalBtn.style.cssText = 'padding:4px 8px;font-size:11px;border:1px solid #dfe1e6;border-radius:3px;cursor:pointer;background:#fff';
+      terminalBtn.addEventListener('click', async () => {
+        const resp = await fetch(`/api/columns/${col.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ is_terminal: col.is_terminal ? 0 : 1 })
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          setState(s => ({
+            ...s,
+            columns: s.columns.map(c => c.id === col.id ? data : c)
+          }));
+        }
+      });
 
-    const btnGroup = document.createElement('div');
-    btnGroup.style.cssText = 'display:flex;gap:4px';
+      const editBtn = document.createElement('button');
+      editBtn.textContent = 'edit';
+      editBtn.style.cssText = 'padding:4px 8px;font-size:11px;border:1px solid #dfe1e6;border-radius:3px;cursor:pointer;background:#fff';
+      editBtn.addEventListener('click', () => showColumnEditForm(col));
 
-    const editBtn = document.createElement('button');
-    editBtn.textContent = 'edit';
-    editBtn.style.cssText = 'padding:4px 8px;font-size:11px;border:1px solid #dfe1e6;border-radius:3px;cursor:pointer;background:#fff';
-    editBtn.addEventListener('click', () => showCategoryEditForm(cat, onCategoriesChange));
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = 'delete';
+      deleteBtn.style.cssText = 'padding:4px 8px;font-size:11px;border:1px solid #dc3545;color:#dc3545;border-radius:3px;cursor:pointer;background:#fff';
+      deleteBtn.addEventListener('click', () => deleteColumn(col));
 
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'delete';
-    deleteBtn.style.cssText = 'padding:4px 8px;font-size:11px;border:1px solid #dc3545;color:#dc3545;border-radius:3px;cursor:pointer;background:#fff';
-    deleteBtn.addEventListener('click', () => deleteCategory(cat, onCategoriesChange));
+      btnGroup.appendChild(terminalBtn);
+      btnGroup.appendChild(editBtn);
+      btnGroup.appendChild(deleteBtn);
 
-    btnGroup.appendChild(editBtn);
-    btnGroup.appendChild(deleteBtn);
+      item.appendChild(nameSpan);
+      item.appendChild(btnGroup);
+      columnsSection.appendChild(item);
+    });
+  }
 
-    item.appendChild(nameSpan);
-    item.appendChild(btnGroup);
-    categoriesSection.appendChild(item);
-  });
+  function renderCategories() {
+    categoriesSection.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h3 style="margin:0;font-size:13px;font-weight:600;color:#5e6c84">CATEGORIES</h3></div>';
+    const categoriesHeader = categoriesSection.querySelector('div');
+    const addCatBtn = document.createElement('button');
+    addCatBtn.textContent = '+ Add';
+    addCatBtn.style.cssText = 'padding:4px 8px;font-size:11px;border:1px solid #0052cc;color:#0052cc;border-radius:3px;cursor:pointer;background:#fff';
+    addCatBtn.addEventListener('click', () => showCreateCategoryForm(onClose));
+    categoriesHeader.appendChild(addCatBtn);
 
+    const state = getState();
+    state.categories.forEach(cat => {
+      const item = document.createElement('div');
+      item.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:8px;margin-bottom:8px;background:#f4f5f7;border-radius:4px';
+
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = cat.name;
+      nameSpan.style.cssText = 'flex:1;font-size:12px';
+
+      const btnGroup = document.createElement('div');
+      btnGroup.style.cssText = 'display:flex;gap:4px';
+
+      const editBtn = document.createElement('button');
+      editBtn.textContent = 'edit';
+      editBtn.style.cssText = 'padding:4px 8px;font-size:11px;border:1px solid #dfe1e6;border-radius:3px;cursor:pointer;background:#fff';
+      editBtn.addEventListener('click', () => showCategoryEditForm(cat));
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = 'delete';
+      deleteBtn.style.cssText = 'padding:4px 8px;font-size:11px;border:1px solid #dc3545;color:#dc3545;border-radius:3px;cursor:pointer;background:#fff';
+      deleteBtn.addEventListener('click', () => deleteCategory(cat));
+
+      btnGroup.appendChild(editBtn);
+      btnGroup.appendChild(deleteBtn);
+
+      item.appendChild(nameSpan);
+      item.appendChild(btnGroup);
+      categoriesSection.appendChild(item);
+    });
+  }
+
+  renderColumns();
+  renderCategories();
+
+  content.appendChild(columnsSection);
   content.appendChild(categoriesSection);
 
   drawer.appendChild(header);
   drawer.appendChild(content);
+
+  const unsubscribe = subscribe(() => {
+    renderColumns();
+    renderCategories();
+  });
+
+  const origOnClose = onClose;
+  onClose = () => {
+    unsubscribe();
+    origOnClose();
+  };
 
   document.body.appendChild(backdrop);
   document.body.appendChild(drawer);
@@ -144,7 +158,7 @@ export function showSettingsDrawer(onClose, onColumnsChange, onCategoriesChange)
   return { backdrop, drawer };
 }
 
-function showColumnEditForm(column, onSave) {
+function showColumnEditForm(column) {
   const modal = document.createElement('div');
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:60';
 
@@ -176,19 +190,18 @@ function showColumnEditForm(column, onSave) {
     }
     try {
       const payload = { name: input.value.trim() };
-      console.log('Sending PATCH to /api/columns/' + column.id, payload);
       const resp = await fetch(`/api/columns/${column.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      console.log('Response status:', resp.status, resp.statusText);
       const data = await resp.json();
-      console.log('Response data:', data);
       if (resp.ok) {
-        console.log('Update successful, closing modal and calling onSave');
+        setState(s => ({
+          ...s,
+          columns: s.columns.map(c => c.id === column.id ? data : c)
+        }));
         document.body.removeChild(modal);
-        onSave();
       } else {
         alert(`Error: ${data.detail || 'Failed to update column'}`);
       }
@@ -210,7 +223,7 @@ function showColumnEditForm(column, onSave) {
   input.select();
 }
 
-function showCategoryEditForm(category, onSave) {
+function showCategoryEditForm(category) {
   const modal = document.createElement('div');
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:60';
 
@@ -242,19 +255,18 @@ function showCategoryEditForm(category, onSave) {
     }
     try {
       const payload = { name: input.value.trim() };
-      console.log('Sending PATCH to /api/categories/' + category.id, payload);
       const resp = await fetch(`/api/categories/${category.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      console.log('Response status:', resp.status, resp.statusText);
       const data = await resp.json();
-      console.log('Response data:', data);
       if (resp.ok) {
-        console.log('Update successful, closing modal and calling onSave');
+        setState(s => ({
+          ...s,
+          categories: s.categories.map(c => c.id === category.id ? data : c)
+        }));
         document.body.removeChild(modal);
-        onSave();
       } else {
         alert(`Error: ${data.detail || 'Failed to update category'}`);
       }
@@ -276,43 +288,51 @@ function showCategoryEditForm(category, onSave) {
   input.select();
 }
 
-function deleteColumn(column, onSave) {
+function deleteColumn(column) {
   if (!confirm(`Delete column "${column.name}"?`)) return;
 
   const state = getState();
   const tasksInColumn = state.tasks.filter(t => t.column_id === column.id);
 
   if (tasksInColumn.length === 0) {
-    deleteColumnDirect(column.id, onSave);
+    deleteColumnDirect(column.id);
   } else {
-    showDeleteDisposition('column', column, tasksInColumn, onSave);
+    showDeleteDisposition('column', column, tasksInColumn);
   }
 }
 
-function deleteCategory(category, onSave) {
+function deleteCategory(category) {
   if (!confirm(`Delete category "${category.name}"?`)) return;
 
   const state = getState();
   const tasksInCategory = state.tasks.filter(t => t.category_id === category.id);
 
   if (tasksInCategory.length === 0) {
-    deleteCategoryDirect(category.id, onSave);
+    deleteCategoryDirect(category.id);
   } else {
-    showDeleteDisposition('category', category, tasksInCategory, onSave);
+    showDeleteDisposition('category', category, tasksInCategory);
   }
 }
 
-async function deleteColumnDirect(columnId, onSave) {
+async function deleteColumnDirect(columnId) {
   const resp = await fetch(`/api/columns/${columnId}?disposition=delete`, { method: 'DELETE' });
-  if (resp.ok) onSave();
+  if (resp.ok) {
+    const stateResp = await fetch('/api/state');
+    const newState = await stateResp.json();
+    setState(s => ({ ...s, columns: newState.columns, tasks: newState.tasks }));
+  }
 }
 
-async function deleteCategoryDirect(categoryId, onSave) {
+async function deleteCategoryDirect(categoryId) {
   const resp = await fetch(`/api/categories/${categoryId}?disposition=delete`, { method: 'DELETE' });
-  if (resp.ok) onSave();
+  if (resp.ok) {
+    const stateResp = await fetch('/api/state');
+    const newState = await stateResp.json();
+    setState(s => ({ ...s, categories: newState.categories, tasks: newState.tasks }));
+  }
 }
 
-function showCreateColumnForm(onSave) {
+function showCreateColumnForm(onClose) {
   const modal = document.createElement('div');
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:60';
 
@@ -348,8 +368,10 @@ function showCreateColumnForm(onSave) {
       body: JSON.stringify({ name: input.value.trim() })
     });
     if (resp.ok) {
+      const colsResp = await fetch('/api/columns');
+      const cols = await colsResp.json();
+      setState(s => ({ ...s, columns: cols }));
       document.body.removeChild(modal);
-      onSave();
     } else {
       alert('Failed to create column');
     }
@@ -366,7 +388,7 @@ function showCreateColumnForm(onSave) {
   input.focus();
 }
 
-function showCreateCategoryForm(onSave) {
+function showCreateCategoryForm(onClose) {
   const modal = document.createElement('div');
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:60';
 
@@ -402,8 +424,10 @@ function showCreateCategoryForm(onSave) {
       body: JSON.stringify({ name: input.value.trim() })
     });
     if (resp.ok) {
+      const catsResp = await fetch('/api/categories');
+      const cats = await catsResp.json();
+      setState(s => ({ ...s, categories: cats }));
       document.body.removeChild(modal);
-      onSave();
     } else {
       alert('Failed to create category');
     }

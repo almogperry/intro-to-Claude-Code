@@ -189,4 +189,4 @@ The MVP is considered complete when:
 
 ---
 
-*Document version 1.0 — MVP scope only*
+*MVP scope only*

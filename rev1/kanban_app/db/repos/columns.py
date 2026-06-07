@@ -15,8 +15,13 @@ def list_cols():
 def create_col(name):
   conn = get_conn()
   c = conn.cursor()
-  max_pos = c.execute("SELECT MAX(position) FROM columns").fetchone()[0] or -1
-  pos = max_pos + 1
+  min_terminal_pos = c.execute("SELECT MIN(position) FROM columns WHERE is_terminal = 1").fetchone()[0]
+  if min_terminal_pos is not None:
+    c.execute("UPDATE columns SET position = position + 1 WHERE position >= ?", (min_terminal_pos,))
+    pos = min_terminal_pos
+  else:
+    max_pos = c.execute("SELECT MAX(position) FROM columns").fetchone()[0] or -1
+    pos = max_pos + 1
   c.execute("INSERT INTO columns (name, position, is_terminal) VALUES (?, ?, 0)", (name, pos))
   conn.commit()
   cid = c.lastrowid

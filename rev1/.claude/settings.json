@@ -37,7 +37,11 @@
       "Bash(git -C 'g:\\\\GIT\\\\intro-to-Claude-Code\\\\rev1' commit -m ' *)",
       "Bash(python -m kanban_app.server)",
       "Bash(curl -s http://localhost:8000)",
-      "PowerShell(Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue })"
+      "PowerShell(Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue })",
+      "Bash(pkill -f \"python.*kanban_app.server\")",
+      "PowerShell(Get-Process python -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -match \"kanban_app.server\" } | Stop-Process -Force -ErrorAction SilentlyContinue; Start-Sleep -Milliseconds 500)",
+      "Bash(sqlite3 kanban_app/kanban.db \"SELECT id, name, position, is_terminal FROM columns ORDER BY position;\")",
+      "Bash(python -c ' *)"
     ]
   }
 }

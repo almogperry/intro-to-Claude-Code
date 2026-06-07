@@ -22,6 +22,16 @@ def seed_defaults():
     ("work/study",),
   ])
 
+  # seed example tasks
+  c.execute("DELETE FROM tasks")
+  now = datetime.now().isoformat()
+  c.executemany("INSERT INTO tasks (title, description, category_id, column_id, priority, position, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [
+    ("[Example] Design new feature", "Create mockups and get feedback", 2, 1, "high", 0, now, now),
+    ("[Example] Review pull requests", None, 2, 1, "med", 1, now, now),
+    ("[Example] Fix login bug", "Users report session timeout", 2, 0, "high", 0, now, now),
+    ("[Example] Update documentation", None, 2, 0, "low", 1, now, now),
+  ])
+
   conn.commit()
   conn.close()
 

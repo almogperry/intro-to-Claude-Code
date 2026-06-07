@@ -1,6 +1,6 @@
 import { getState, setState } from '../store.js';
 
-export function showDeleteDisposition(type, item, tasks, onClose) {
+export function showDeleteDisposition(type, item, tasks) {
   const modal = document.createElement('div');
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:70';
 
@@ -116,10 +116,18 @@ export function showDeleteDisposition(type, item, tasks, onClose) {
 
     if (type === 'column') {
       const resp = await fetch(`/api/columns/${item.id}?disposition=${disposition}`, { method: 'DELETE' });
-      if (resp.ok) onClose();
+      if (resp.ok) {
+        const stateResp = await fetch('/api/state');
+        const newState = await stateResp.json();
+        setState(s => ({ ...s, columns: newState.columns, tasks: newState.tasks }));
+      }
     } else {
       const resp = await fetch(`/api/categories/${item.id}?disposition=${disposition}`, { method: 'DELETE' });
-      if (resp.ok) onClose();
+      if (resp.ok) {
+        const stateResp = await fetch('/api/state');
+        const newState = await stateResp.json();
+        setState(s => ({ ...s, categories: newState.categories, tasks: newState.tasks }));
+      }
     }
   });
 

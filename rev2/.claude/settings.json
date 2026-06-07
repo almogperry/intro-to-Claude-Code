@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python prototype_state_model.py)",
+      "Read(//c/Users/User/.claude/skills/setup-matt-pocock-skills/**)",
+      "Read(//c/Users/User/.agents/skills/setup-matt-pocock-skills/**)"
+    ]
+  }
+}

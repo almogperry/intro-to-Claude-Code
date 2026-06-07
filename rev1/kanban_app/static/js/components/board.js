@@ -6,6 +6,7 @@ import { showSettingsDrawer } from './settings_drawer.js';
 import { initDnD } from '../dnd.js';
 import { applyFilters, getDefaultFilterState } from '../filters.js';
 import { getDueStatus } from '../due_window.js';
+import { showIntroModal } from './intro.js';
 
 export function renderBoard(parent) {
   parent.innerHTML = `
@@ -71,4 +72,6 @@ export function renderBoard(parent) {
 
   render();
   subscribe(render);
+
+  showIntroModal();
 }

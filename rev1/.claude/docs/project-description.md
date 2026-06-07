@@ -23,6 +23,8 @@ See [../../CONTEXT.md](../../CONTEXT.md). Terms used below — *Board, Task, Col
 | Code root | `rev1/kanban_app/` |
 | Auth | none |
 
+
+
 ## 4. Folder structure
 
 ```
