@@ -40,3 +40,27 @@ def create_task(body: CreateTaskBody, db: Session = Depends(get_db)):
         return serialize_task(task)
     except ValueError as e:
         return JSONResponse(status_code=400, content={"error": str(e)})
+
+
+class PatchTaskBody(BaseModel):
+    title: str | None = None
+    priority: str | None = None
+    scope: str | None = None
+    dueDate: str | None = None
+    categoryId: str | None = None
+
+    model_config = {"extra": "forbid"}
+
+
+@router.patch("/api/tasks/{task_id}")
+def patch_task(task_id: str, body: PatchTaskBody, db: Session = Depends(get_db)):
+    fields = {k: v for k, v in body.model_dump(exclude_unset=True).items()}
+    try:
+        task = TaskService(db).patch_task(task_id, fields)
+        db.commit()
+        return serialize_task(task)
+    except ValueError as e:
+        msg = str(e)
+        if "not found" in msg:
+            return JSONResponse(status_code=404, content={"error": msg})
+        return JSONResponse(status_code=400, content={"error": msg})

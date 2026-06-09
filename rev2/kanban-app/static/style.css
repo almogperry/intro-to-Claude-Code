@@ -42,8 +42,39 @@ header h1 { margin: 0; font-size: 20px; }
 
 .tasks { min-height: 40px; }
 
+.task { cursor: pointer; }
+
 .rev {
   padding: 12px 24px;
   color: #97a0af;
   font-size: 12px;
+}
+
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.popup-dialog {
+  background: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 300px;
+}
+
+.popup-dialog label { font-size: 12px; font-weight: 600; color: #5e6c84; }
+.popup-dialog input, .popup-dialog select {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #dfe1e6;
+  border-radius: 4px;
+  font-size: 14px;
 }
