@@ -20,3 +20,4 @@ class Column(Base):
     is_terminal: Mapped[bool] = mapped_column(Boolean, default=False)
 
     board: Mapped["Board"] = relationship(back_populates="columns")
+    tasks: Mapped[list["Task"]] = relationship(back_populates="column")

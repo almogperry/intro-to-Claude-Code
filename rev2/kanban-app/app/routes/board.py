@@ -8,7 +8,21 @@ from app.services.board_service import BoardService
 router = APIRouter()
 
 
+def _serialize_task(t) -> dict:
+    return {
+        "id": t.id,
+        "title": t.title,
+        "columnId": t.column_id,
+        "categoryId": t.category_id,
+        "priority": t.priority,
+        "scope": t.scope,
+        "dueDate": t.due_date,
+        "sortKey": t.sort_key,
+    }
+
+
 def serialize_board(board: Board) -> dict:
+    tasks = [t for col in board.columns for t in col.tasks]
     return {
         "id": board.id,
         "terminalColumnId": board.terminal_column_id,
@@ -24,7 +38,7 @@ def serialize_board(board: Board) -> dict:
             }
             for c in sorted(board.columns, key=lambda c: c.position)
         ],
-        "tasks": [],
+        "tasks": [_serialize_task(t) for t in tasks],
         "subtasks": [],
     }
 

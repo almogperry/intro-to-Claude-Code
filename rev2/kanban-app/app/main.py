@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from app.config import PORT
 from app.db.session import init_db
 from app.routes.board import router as board_router
+from app.routes.task import router as task_router
 
 
 @asynccontextmanager
@@ -17,6 +18,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(board_router)
+app.include_router(task_router)
 
 static_dir = Path(__file__).resolve().parents[1] / "static"
 app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")

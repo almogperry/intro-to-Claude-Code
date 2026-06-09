@@ -21,3 +21,14 @@ function byId(items) {
 export function orderedColumns(state) {
   return Object.values(state.columns).sort((a, b) => a.position - b.position);
 }
+
+// Tasks for a column, sorted priority desc then sort_key asc.
+const PRIORITY = { high: 2, medium: 1, low: 0 };
+export function tasksForColumn(state, columnId) {
+  return Object.values(state.tasks)
+    .filter((t) => t.columnId === columnId)
+    .sort((a, b) => {
+      const pd = (PRIORITY[b.priority] ?? 1) - (PRIORITY[a.priority] ?? 1);
+      return pd !== 0 ? pd : a.sortKey - b.sortKey;
+    });
+}
