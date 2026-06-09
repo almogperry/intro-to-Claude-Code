@@ -36,3 +36,56 @@ def test_create_task_with_category(session):
 def test_create_task_invalid_column_raises(session):
     with pytest.raises(ValueError, match="column"):
         TaskService(session).create_task(title="T", column_id="nonexistent")
+
+
+def _make_task(session):
+    board = BoardService(session).get_board()
+    col = board.columns[0]
+    return TaskService(session).create_task(title="Original", column_id=col.id)
+
+
+def test_patch_task_title(session):
+    task = _make_task(session)
+    updated = TaskService(session).patch_task(task.id, {"title": "New title"})
+    assert updated.title == "New title"
+
+
+def test_patch_task_priority(session):
+    task = _make_task(session)
+    updated = TaskService(session).patch_task(task.id, {"priority": "high"})
+    assert updated.priority == "high"
+
+
+def test_patch_task_scope_and_due_date(session):
+    task = _make_task(session)
+    updated = TaskService(session).patch_task(task.id, {"scope": "week", "dueDate": "2025-12-31"})
+    assert updated.scope == "week"
+    assert updated.due_date == "2025-12-31"
+
+
+def test_patch_task_clear_scope_and_due_date(session):
+    board = BoardService(session).get_board()
+    col = board.columns[0]
+    task = TaskService(session).create_task(
+        title="T", column_id=col.id, scope="week", due_date="2025-12-31"
+    )
+    updated = TaskService(session).patch_task(task.id, {"scope": None, "dueDate": None})
+    assert updated.scope is None
+    assert updated.due_date is None
+
+
+def test_patch_task_scope_without_due_date_raises(session):
+    task = _make_task(session)
+    with pytest.raises(ValueError, match="scope"):
+        TaskService(session).patch_task(task.id, {"scope": "day"})
+
+
+def test_patch_task_due_date_without_scope_raises(session):
+    task = _make_task(session)
+    with pytest.raises(ValueError, match="scope"):
+        TaskService(session).patch_task(task.id, {"dueDate": "2025-12-31"})
+
+
+def test_patch_task_not_found_raises(session):
+    with pytest.raises(ValueError, match="task"):
+        TaskService(session).patch_task("nonexistent", {"title": "X"})

@@ -25,3 +25,7 @@ export function getBoard() {
 export function postTask(title, columnId) {
   return request("POST", "/api/tasks", { title, columnId });
 }
+
+export function patchTask(id, fields) {
+  return request("PATCH", `/api/tasks/${id}`, fields);
+}
